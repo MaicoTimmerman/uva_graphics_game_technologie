@@ -2,26 +2,26 @@
  *
  * Filename ........ main.c
  * Description ..... main program (opens window, draws figure)
- * Created by ...... Jurgen Sturm 
+ * Created by ...... Jurgen Sturm
  *
  */
-//test 
-#include "SDL.h"   
+//test
+#include "SDL.h"
 #include "init.h"
 
 SDL_Surface *screen;
 
 int main(void) {
 
-screen = InitialiseScreen(400, 300);
+    screen = InitialiseScreen(400, 300);
 
-  ReportPixelFormat(screen);
+    ReportPixelFormat(screen);
 
-  DrawFigure(screen);
+    DrawFigure(screen);
 
-  WaitForEvent();
+    WaitForEvent();
 
-  SDL_Quit();
+    SDL_Quit();
 
-  return(0);
+    return(0);
 }
