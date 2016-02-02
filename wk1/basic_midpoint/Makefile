@@ -12,7 +12,8 @@
 .SUFFIXES: .c .o #.cpp
 
 CC=gcc
-CFLAGS=$(shell sdl-config --cflags) -W -Wall -Werror -std=c99 -pedantic-errors
+# CFLAGS=$(shell sdl-config --cflags) -W -Wall -Werror -std=c99 -pedantic-errors
+CFLAGS=$(shell sdl-config --cflags) -W  -Werror -std=c99 -pedantic-errors
 LDFLAGS=$(shell sdl-config --libs) -lm -lGL
 #SOURCES=$(shell ls *.c *.c??)
 
