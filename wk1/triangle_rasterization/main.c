@@ -33,8 +33,7 @@ int     color_by_putpixel_count = 0;
 
 byte    *framebuffer;
 
-void
-InitOpenGL(void)
+void InitOpenGL(void)
 {
     // Set the background color
     glClearColor(0., 0., 0., 0.);
@@ -70,8 +69,7 @@ void PutPixel(int x, int y, byte r, byte g, byte b)
     framebuffer[3*(framebuffer_width*y+x)+2] = b;
 }
 
-void
-DrawTriangles(void)
+void DrawTriangles(void)
 {
     struct  triangle tri;
     for (unsigned int t = 0; t < sizeof(triangles)/sizeof(struct triangle); t++)
@@ -107,8 +105,7 @@ DrawTriangles(void)
     }
 }
 
-void
-DrawTrianglesOpenGL(void)
+void DrawTrianglesOpenGL(void)
 {
     struct  triangle tri;
 
@@ -142,8 +139,7 @@ DrawTrianglesOpenGL(void)
     }
 }
 
-void
-TestRasterizationSpeed(void)
+void TestRasterizationSpeed(void)
 {
     const int N = 1000;
 
@@ -185,8 +181,7 @@ TestRasterizationSpeed(void)
     printf("%d triangles in %.6f seconds, %.1f triangles/sec\n", N, diff, N/diff);
 }
 
-void
-DrawPixels(void)
+void DrawPixels(void)
 {
     const int N = 1000000;
 
@@ -209,8 +204,7 @@ DrawPixels(void)
     printf("%d pixels in %.6f seconds, %.1f pixels/sec\n", N, diff, N/diff);
 }
 
-void
-DrawScene(void)
+void DrawScene(void)
 {
 
     /* clear the draw buffer */
@@ -277,8 +271,7 @@ DrawScene(void)
     glutSwapBuffers();
 }
 
-void
-KeyPressed(unsigned char key, int x, int y)
+void KeyPressed(unsigned char key, int x, int y)
 {
     switch (key)
     {
@@ -325,8 +318,7 @@ KeyPressed(unsigned char key, int x, int y)
     }
 }
 
-int
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     glutInit(&argc, argv);
 
