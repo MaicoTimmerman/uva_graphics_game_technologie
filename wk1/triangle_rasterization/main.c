@@ -56,8 +56,8 @@ void PutPixel(int x, int y, byte r, byte g, byte b)
 {
     if (x < 0 || y < 0 || x >= framebuffer_width || y >= framebuffer_height)
     {
-        printf("PutPixel(): x, y coordinates (%d, %d) outside of visible area!\n",
-                x, y);
+        /* printf("PutPixel(): x, y coordinates (%d, %d) outside of visible area!\n", */
+        /*         x, y); */
         return;
     }
 
@@ -83,7 +83,8 @@ void DrawTriangles(void)
                 vertices[tri.i].x, vertices[tri.i].y,
                 vertices[tri.j].x, vertices[tri.j].y,
                 vertices[tri.k].x, vertices[tri.k].y,
-                colors[tri.c].r, colors[tri.c].g, colors[tri.c].b);
+                /* colors[tri.c].r, colors[tri.c].g, colors[tri.c].b); */
+                255, 255, 255);
 
         }
         else
@@ -93,7 +94,8 @@ void DrawTriangles(void)
                 vertices[tri.i].x, vertices[tri.i].y,
                 vertices[tri.j].x, vertices[tri.j].y,
                 vertices[tri.k].x, vertices[tri.k].y,
-                colors[tri.c].r, colors[tri.c].g, colors[tri.c].b);
+                /* colors[tri.c].r, colors[tri.c].g, colors[tri.c].b); */
+                255, 255, 255);
         }
 
         if (draw_corners)
