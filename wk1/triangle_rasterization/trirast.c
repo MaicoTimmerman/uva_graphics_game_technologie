@@ -67,8 +67,25 @@ void
 draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, float y2,
     byte r, byte g, byte b)
 {
-    PutPixel(1,1, 255, 0, 0);
-    PutPixel(2,2, 255, 0, 0);
-    PutPixel(1,2, 255, 0, 0);
-    PutPixel(2,1, 255, 0, 0);
+    float alpha, beta, gamma;
+
+    float f_alpha = f12(x0, y0, x1, y1, x2, y2, x0, y0);
+    float f_beta = f20(x0, y0, x1, y1, x2, y2, x1, y1);
+    float f_gamma = f01(x0, y0, x1, y1, x2, y2, x2, y2);
+    
+    int x_min = (int) x0 < x1 && x0 < x2 ? x0 : x1 < x2 ? x1 : x2;
+    int x_max = (int) ceil(x0 > x1 && x0 > x2 ? x0 : x1 > x2 ? x1 : x2);
+    int y_min = (int) y0 < y1 && y0 < y2 ? y0 : y1 < y2 ? y1 : y2;
+    int y_max = (int) ceil(y0 > y1 && y0 > y2 ? y0 : y1 > y2 ? y1 : y2);
+    
+    for (int x = x_min; x < x_max; ++x) {
+        for (int y = y_min; y < y_max; ++y) {
+            alpha = f12(x0, y0, x1, y1, x2, y2, x, y)/ f_alpha;
+            beta = f20(x0, y0, x1, y1, x2, y2, x, y)/ f_beta;
+            gamma = f01(x0, y0, x1, y1, x2, y2, x, y)/ f_gamma;
+            if (alpha >= 0 && beta >= 0 && gamma >= 0) {
+                PutPixel(x, y, alpha*r, beta*g, gamma*b);
+            }
+        }
+    }
 }
