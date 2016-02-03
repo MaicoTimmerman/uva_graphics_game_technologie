@@ -15,7 +15,7 @@ clean:
 	rm -f *.o
 	rm -f trirast
 
-run:
+run: all
 	./trirast
 
 trirast.o   : types.h trirast.c
