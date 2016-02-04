@@ -101,7 +101,7 @@ void
 draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, float y2,
     byte r, byte g, byte b)
 {
-    float alpha, beta, gamma;
+    float alpha, beta, gamma, alpha2, beta2, gamma2;
     
     int off_screen_x = -1;
     int off_screen_y = -1;
@@ -124,21 +124,43 @@ draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, float 
     int y_min = (int) y0 < y1 && y0 < y2 ? y0 : y1 < y2 ? y1 : y2;
     int y_max = (int) ceil(y0 > y1 && y0 > y2 ? y0 : y1 > y2 ? y1 : y2);
     
+    float alpha_partial_y = (x2-x1);
+    float beta_partial_y = (x0-x2);
+    float gamma_partial_y = (x1-x0);
+    
+    float alpha_partial_x = (y1-y2);
+    float beta_partial_x = (y2-y0);
+    float gamma_partial_x = (y0-y1);
+    
+    alpha = f12_opt(x1, y1, x2, y2, x1y2_x2y1, x_min, y_min);
+    beta = f20_opt(x0, y0, x2, y2, x2y0_x0y2, x_min, y_min);
+    gamma = f01_opt(x0, y0, x1, y1, x0y1_x1y0, x_min, y_min);
+    
+    float d_alpha_y_loop = ((y_max-y_min+1)*alpha_partial_y);
+    float d_beta_y_loop = ((y_max-y_min+1)*beta_partial_y);
+    float d_gamma_y_loop = ((y_max-y_min+1)*gamma_partial_y);
+    
     /* The loop runs over each x and y in the bounding box, uses the
      * barycentric coordinates to determine whether to draw it and for what
      * color. Edges are detected using the off-screen point method. */
-    for (int x = x_min; x <= x_max; ++x) {
-        for (int y = y_min; y <= y_max; ++y) {
-            alpha = f12_opt(x1, y1, x2, y2, x1y2_x2y1, x, y)/ f_alpha;
-            beta = f20_opt(x0, y0, x2, y2, x2y0_x0y2, x, y)/ f_beta;
-            gamma = f01_opt(x0, y0, x1, y1, x0y1_x1y0, x, y)/ f_gamma;
-            if (alpha >= 0 && beta >= 0 && gamma >= 0) {
-                if ((alpha > 0 || f_alpha_f12 > 0)
-                    && (beta > 0 || f_beta_f20 > 0)
-                    && (gamma > 0 || f_gamma_f01 > 0)) {
-                    PutPixel(x, y, alpha*r, beta*g, gamma*b);
-                }
+    for (int x = x_min; x <= x_max; x++) {
+        for (int y = y_min; y <= y_max; y++) {
+            alpha2 = alpha / f_alpha;
+            beta2 = beta / f_beta;
+            gamma2 = gamma / f_gamma;
+            if (alpha2 >= 0 && beta2 >= 0 && gamma2 >= 0) {
+                if ((alpha2 > 0 || f_alpha_f12 > 0)
+                    && (beta2 > 0 || f_beta_f20 > 0)
+                    && (gamma2 > 0 || f_gamma_f01 > 0)) {
+                        PutPixel(x, y, alpha2*r, beta2*g, gamma2*b);
+                    }
             }
+            alpha += alpha_partial_y;
+            beta += beta_partial_y;
+            gamma += gamma_partial_y;
         }
+        alpha += alpha_partial_x - d_alpha_y_loop;
+        beta += beta_partial_x  - d_beta_y_loop;
+        gamma += gamma_partial_x - d_gamma_y_loop;
     }
 }
