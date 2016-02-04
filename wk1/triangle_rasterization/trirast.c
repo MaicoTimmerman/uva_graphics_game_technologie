@@ -57,6 +57,7 @@ void draw_triangle(float x0, float y0, float x1, float y1, float x2, float y2,
 
     float alpha, beta, gamma;
     
+    /* These are the off-screen point method coordinates. */
     int off_screen_x = -1;
     int off_screen_y = -1;
 
@@ -88,6 +89,7 @@ draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, float 
 {
     float alpha2, beta2, gamma2;
     
+    /* These are the off-screen point method coordinates. */
     int off_screen_x = -1;
     int off_screen_y = -1;
     
@@ -106,25 +108,30 @@ draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, float 
     int y_min = (int) y0 < y1 && y0 < y2 ? y0 : y1 < y2 ? y1 : y2;
     int y_max = (int) ceil(y0 > y1 && y0 > y2 ? y0 : y1 > y2 ? y1 : y2);
     
+    /* These are the values of alpha, beta and gamma for x_min and y_min. */
     float alpha = f12(x1, y1, x2, y2, x_min, y_min);
     float beta = f20(x0, y0, x2, y2, x_min, y_min);
     float gamma = f01(x0, y0, x1, y1, x_min, y_min);
     
-    int alpha_partial_y = (x2-x1);
-    int beta_partial_y = (x0-x2);
-    int gamma_partial_y = (x1-x0);
+    /* This is the change of alpha, beta and gamma for each y step. */
+    int alpha_partial_y = x2 - x1;
+    int beta_partial_y = x0 - x2;
+    int gamma_partial_y = x1 - x0;
     
-    int alpha_partial_x = (y1-y2);
-    int beta_partial_x = (y2-y0);
-    int gamma_partial_x = (y0-y1);
+    /* This is the change of alpha, beta and gamma for each x step. */
+    int alpha_partial_x = y1 - y2;
+    int beta_partial_x = y2 - y0;
+    int gamma_partial_x = y0 - y1;
     
-    int d_alpha_y_loop = ((y_max-y_min+1)*alpha_partial_y);
-    int d_beta_y_loop = ((y_max-y_min+1)*beta_partial_y);
-    int d_gamma_y_loop = ((y_max-y_min+1)*gamma_partial_y);
+    /* This is what is added to alpha, beta and gamma while in the y loop. */
+    int d_alpha_y_loop = (y_max-y_min+1)*alpha_partial_y;
+    int d_beta_y_loop = (y_max-y_min+1)*beta_partial_y;
+    int d_gamma_y_loop = (y_max-y_min+1)*gamma_partial_y;
     
     /* The loop runs over each x and y in the bounding box, uses the
      * barycentric coordinates to determine whether to draw it and for what
-     * color. Edges are detected using the off-screen point method. */
+     * color. Edges are detected using the off-screen point method. This is an
+     * incremental implementation. */
     for (int x = x_min; x <= x_max; x++) {
         for (int y = y_min; y <= y_max; y++) {
             alpha2 = alpha / f_alpha;
@@ -141,6 +148,8 @@ draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, float 
             beta += beta_partial_y;
             gamma += gamma_partial_y;
         }
+        /* The changes done during the y loop need to be subtraced before
+         * adding the partial x. */
         alpha += alpha_partial_x - d_alpha_y_loop;
         beta += beta_partial_x  - d_beta_y_loop;
         gamma += gamma_partial_x - d_gamma_y_loop;
