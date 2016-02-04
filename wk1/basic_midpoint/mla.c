@@ -122,12 +122,9 @@ int detect_octant(int x0, int x1, int y0, int y1) {
 }
 
 float calc_d(int x0, int y0, int x1, int y1) {
-    float fx0 = (float) x0;
     float fy0 = (float) y0;
-    float fx1 = (float) x1;
-    float fy1 = (float) y1;
 
-    return (fy0-fy1)*(x0+1) + (fx1-fx0)*(fy0+0.5) + fx0*fy1 - fx1*fy0;
+    return (fy0-y1)*(x0+1) + (x1-x0)*(y0+0.5) + x0*y1 - x1*y0;
 }
 
 void mla(SDL_Surface *s, int x0, int y0, int x1, int y1, Uint32 colour) {
@@ -154,6 +151,7 @@ void mla(SDL_Surface *s, int x0, int y0, int x1, int y1, Uint32 colour) {
         translate_coords_to_origin(-1*x0, ori_x, -1*y0, ori_y, &ox, &oy);
 
         PutPixel(s, ox, oy, colour);
+        /* Set the check value for the pixel to the right. If the line is going through the current y+1, if true, raise the y value accordingly */
         if (d < 0) {
             y++;
             d += (oct0_x1-x) + (y-oct0_y1);
