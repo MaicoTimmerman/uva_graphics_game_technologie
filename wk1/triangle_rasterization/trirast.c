@@ -73,6 +73,19 @@ void draw_triangle(float x0, float y0, float x1, float y1, float x2, float y2,
     }
 }
 
+float f01_opt(float x0, float y0, float x1, float y1, float x0y1_x1y0,
+        float x, float y) {
+    return (y0-y1)*x + (x1-x0)*y + x0y1_x1y0;
+}
+float f12_opt(float x1, float y1, float x2, float y2, float x1y2_x2y1,
+        float x, float y) {
+    return (y1-y2)*x + (x2-x1)*y + x1y2_x2y1;
+}
+float f20_opt(float x0, float y0, float x2, float y2, float x2y0_x0y2,
+        float x, float y) {
+    return (y2-y0)*x + (x0-x2)*y + x2y0_x0y2;
+}
+
 void
 draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, float y2,
     byte r, byte g, byte b)
@@ -81,10 +94,17 @@ draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, float 
     
     int off_screen_x = -1;
     int off_screen_y = -1;
+    
+    float x0y1_x1y0 = x0*y1 - x1*y0;
+    float x1y2_x2y1 = x1*y2 - x2*y1;
+    float x2y0_x0y2 = x2*y0 - x0*y2;
 
-    float f_alpha = f12(x0, y0, x1, y1, x2, y2, x0, y0);
-    float f_beta = f20(x0, y0, x1, y1, x2, y2, x1, y1);
-    float f_gamma = f01(x0, y0, x1, y1, x2, y2, x2, y2);
+    float f_alpha = f12_opt(x1, y1, x2, y2, x1y2_x2y1, x0, y0);
+    float f_beta = f20_opt(x0, y0, x2, y2, x2y0_x0y2, x1, y1);
+    float f_gamma = f01_opt(x0, y0, x1, y1, x0y1_x1y0, x2, y2);
+    float f_alpha_f12 = f_alpha * f12_opt(x1, y1, x2, y2, x1y2_x2y1, off_screen_x, off_screen_y);
+    float f_beta_f20 = f_beta * f20_opt(x0, y0, x2, y2, x2y0_x0y2, off_screen_x, off_screen_y);
+    float f_gamma_f01 = f_gamma * f01_opt(x0, y0, x1, y1, x0y1_x1y0, off_screen_x, off_screen_y);
     
     int x_min = (int) x0 < x1 && x0 < x2 ? x0 : x1 < x2 ? x1 : x2;
     int x_max = (int) ceil(x0 > x1 && x0 > x2 ? x0 : x1 > x2 ? x1 : x2);
@@ -93,13 +113,13 @@ draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, float 
     
     for (int x = x_min; x <= x_max; ++x) {
         for (int y = y_min; y <= y_max; ++y) {
-            alpha = f12(x0, y0, x1, y1, x2, y2, x, y)/ f_alpha;
-            beta = f20(x0, y0, x1, y1, x2, y2, x, y)/ f_beta;
-            gamma = f01(x0, y0, x1, y1, x2, y2, x, y)/ f_gamma;
+            alpha = f12_opt(x1, y1, x2, y2, x1y2_x2y1, x, y)/ f_alpha;
+            beta = f20_opt(x0, y0, x2, y2, x2y0_x0y2, x, y)/ f_beta;
+            gamma = f01_opt(x0, y0, x1, y1, x0y1_x1y0, x, y)/ f_gamma;
             if (alpha >= 0 && beta >= 0 && gamma >= 0) {
-                if ((alpha > 0 || f_alpha * f12(x0, y0, x1, y1, x2, y2, off_screen_x, off_screen_y) > 0)
-                    && (beta > 0 || f_beta * f20(x0, y0, x1, y1, x2, y2, off_screen_x, off_screen_y) > 0)
-                    && (gamma > 0 || f_gamma * f01(x0, y0, x1, y1, x2, y2, off_screen_x, off_screen_y) > 0)) {
+                if ((alpha > 0 || f_alpha_f12 > 0)
+                    && (beta > 0 || f_beta_f20 > 0)
+                    && (gamma > 0 || f_gamma_f01 > 0)) {
                     PutPixel(x, y, alpha*r, beta*g, gamma*b);
                 }
             }
