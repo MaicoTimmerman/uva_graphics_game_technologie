@@ -6,7 +6,7 @@
  * Student name .... Maico Timmerman, Tim van Zalingen
  * Student email ... maico.timmerman@gmail.com, timvzalingen@gmail.com
  * Collegekaart .... 10542590, 10784012
- * Date ............ 5 februari 2015
+ * Date ............ 4 februari 2015
  */
 
 #include <stdlib.h>
@@ -130,8 +130,8 @@ draw_triangle_optimized(float x0, float y0, float x1, float y1, float x2, float 
     
     /* The loop runs over each x and y in the bounding box, uses the
      * barycentric coordinates to determine whether to draw it and for what
-     * color. Edges are detected using the off-screen point method. This is an
-     * incremental implementation. */
+     * color. Whether to draw an edge is based on the off-screen point method.
+     * This is an incremental implementation. */
     for (int x = x_min; x <= x_max; x++) {
         for (int y = y_min; y <= y_max; y++) {
             alpha2 = alpha / f_alpha;
