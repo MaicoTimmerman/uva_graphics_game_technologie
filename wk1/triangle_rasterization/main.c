@@ -61,7 +61,9 @@ void PutPixel(int x, int y, byte r, byte g, byte b)
         return;
     }
     
-    
+    /* If color_by_putpixel_count is 1, we want to draw a point which is not
+     * set with r = 0, set once with r = 128 and set more than once with
+     * r = 255. g and b are both 0. */
     if (color_by_putpixel_count) {
         if (framebuffer[3*(framebuffer_width*y+x)] == 128 ||
             framebuffer[3*(framebuffer_width*y+x)] == 255) {
