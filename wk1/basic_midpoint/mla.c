@@ -35,26 +35,27 @@
  */
 
 void to_octant_zero_from(int octant, int x, int y, int* oct0_x, int* oct0_y) {
-    /* Convert given x and y to a given octant and return the result. */
+    /* Convert given x and y from an given octant to octant 0. */
 
     switch (octant) {
         case 0: *oct0_x =  x; *oct0_y =  y; return;
         case 1: *oct0_x =  x; *oct0_y = -y; return;
-        case 2: *oct0_x = -y; *oct0_y = x; return;
+        case 2: *oct0_x = -y; *oct0_y =  x; return;
         case 3: *oct0_x = -y; *oct0_y = -x; return;
         case 4: *oct0_x = -x; *oct0_y = -y; return;
         case 5: *oct0_x = -x; *oct0_y =  y; return;
-        case 6: *oct0_x = y; *oct0_y = -x; return;
-        case 7: *oct0_x =  y; *oct0_y = x; return;
+        case 6: *oct0_x =  y; *oct0_y = -x; return;
+        case 7: *oct0_x =  y; *oct0_y =  x; return;
     }
 }
 
 void from_octant_zero_to(int octant, int x, int y, int* octn_x, int* octn_y) {
+    /* Convert given x and y from octant zero to a given octant. */
 
     switch(octant) {
         case 0: *octn_x =  x; *octn_y =  y; return;
         case 1: *octn_x =  x; *octn_y = -y; return;
-        case 2: *octn_x = y; *octn_y =  -x; return;
+        case 2: *octn_x =  y; *octn_y = -x; return;
         case 3: *octn_x = -y; *octn_y = -x; return;
         case 4: *octn_x = -x; *octn_y = -y; return;
         case 5: *octn_x = -x; *octn_y =  y; return;
@@ -137,7 +138,6 @@ void mla(SDL_Surface *s, int x0, int y0, int x1, int y1, Uint32 colour) {
     int tx1, ty1;
 
     octant = detect_octant(x0, x1, y0, y1);
-
     translate_coords_to_origin(x0, x1, y0, y1, &tx1, &ty1);
 
     to_octant_zero_from(octant, tx1, ty1, &oct0_x1, &oct0_y1);
@@ -145,8 +145,10 @@ void mla(SDL_Surface *s, int x0, int y0, int x1, int y1, Uint32 colour) {
     int d = (int)roundf(calc_d(0, 0, oct0_x1, oct0_y1));
     int y = 0;
 
+    /* Loop over all projected x values of a line to determine the projected y
+     * value and draw this pixel after converting back to the original octant.
+     */
     for (int x = 0; x <= oct0_x1; x++) {
-
 
         from_octant_zero_to(octant, x, y, &ori_x, &ori_y);
         translate_coords_to_origin(-1*x0, ori_x, -1*y0, ori_y, &ox, &oy);
@@ -162,4 +164,3 @@ void mla(SDL_Surface *s, int x0, int y0, int x1, int y1, Uint32 colour) {
 
     return;
 }
-
