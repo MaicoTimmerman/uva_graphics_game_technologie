@@ -8,9 +8,6 @@
  * Student email ... timvzalingen@gmail.com & maico.timmerman@gmail.com
  * Collegekaart .... 10784012 & 10542590
  * Date ............ 12 Februari 2016
- *
- *
- * (always fill in these fields before submitting!!)
  */
 #include <GL/glut.h>
 #include <GL/gl.h>
@@ -19,15 +16,18 @@
 
 /* ANSI C/ISO C89 does not specify this constant (?) */
 #ifndef M_PI
-#define M_PI           3.14159265358979323846  /* pi */
+#define M_PI 3.14159265358979323846  /* pi */
 #endif
 
+/* Take the crossproduct of vectors a and b and place the results in the
+ * out vector */
 void cross(GLdouble *a, GLdouble *b, GLdouble *out) {
     out[0] = a[1]*b[2] - a[2]*b[1];
     out[1] = a[2]*b[0] - a[0]*b[2];
     out[2] = a[0]*b[1] - a[1]*b[0];
 }
 
+/* Normalize the vector a by dividing all components by the vectors length. */
 void normalize(GLdouble *a) {
     GLdouble norm = sqrt(a[0]*a[0] + a[1]*a[1] + a[2]*a[2]);
 
@@ -36,6 +36,7 @@ void normalize(GLdouble *a) {
     a[2] = a[2] / norm;
 }
 
+/* Translate coordinates of the world to coordinates for the camera */
 void myLookAt(GLdouble eyeX, GLdouble eyeY, GLdouble eyeZ,
               GLdouble centerX, GLdouble centerY, GLdouble centerZ,
               GLdouble upX, GLdouble upY, GLdouble upZ) {
@@ -44,6 +45,7 @@ void myLookAt(GLdouble eyeX, GLdouble eyeY, GLdouble eyeZ,
     GLdouble cz[3] = {centerX - eyeX, centerY - eyeY, centerZ - eyeZ};
     GLdouble cx[3], cy[3];
 
+    /* Translate the camera to the origin */
     glPushMatrix();
     glTranslatef(-eyeX, -eyeY, -eyeZ);
     glPopMatrix();
