@@ -21,3 +21,6 @@ realclean: clean
 clean:
 	rm -f *.o
 	rm -f main
+
+run: all
+	./main
