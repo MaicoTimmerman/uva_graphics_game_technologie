@@ -12,7 +12,7 @@ all: transformations gimbal
 transformations: main.o transformations.o
 	$(CC) -o transformations main.o transformations.o $(LDFLAGS)
 gimbal: gimbal.o
-	$(CC) -o gimbal gimbal.o $(LDFLAGS)
+	$(CC) -o gimbal gimbal.o transformations.o $(LDFLAGS)
 
 clean:
 	rm -f *.o
@@ -25,4 +25,5 @@ gimbal.o          : transformations.h gimbal.c
 main.o            : transformations.h main.c
 
 run: all
-	./transformations
+# 	./transformations
+	./gimbal

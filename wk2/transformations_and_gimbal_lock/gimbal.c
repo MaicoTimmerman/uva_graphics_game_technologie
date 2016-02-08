@@ -4,14 +4,23 @@
  * Description ..... Draw teapots that can be interactively rotated with the mouse
  * Created by ...... Paul Melis
  *
- * Student name ....
- * Student email ...
- * Collegekaart ....
- * Date ............
- * Comments ........
+ * Student name .... Tim van Zalingen & Maico Timmerman
+ * Student email ... timvzalingen@gmail.com & maico.timmerman@gmail.com
+ * Collegekaart .... 10784012 & 10542590
+ * Date ............ 12 Februari 2016
  *
  *
- * (always fill in these fields before submitting!!)
+ * Q1
+ *  Axes are rotated in the order of x, y and z.
+ * 
+ * Q2
+ *  The third teapot's z axis won't rotate around the origin.
+ *  Due to the 90 degree rotation of the y-axis, te value of the z-axis is
+ *  locked.
+ *  We have solved this issue by rotating the entire world, before drawing the
+ *  teapots. This is done by the myRotatef function. The original solution to
+ *  rotating the teapots is commented out.
+ * 
  */
 
 #include <stdio.h>
@@ -98,11 +107,24 @@ void drawRotatedTeapot(float rotx, float roty, float rotz)
 void drawTeapots(void)
 {
     /* This function is called from DrawGLScene() below */
-
+    
     glPushMatrix();
-
     drawRotatedTeapot(x_rotation, 0.0, z_rotation);
-
+    glPopMatrix();
+    
+    myTranslatef(5.0, 0.0, 0.0);
+    myRotatef(45.0, 0.0, 1.0, 0.0);
+    glPushMatrix();
+//     drawRotatedTeapot(x_rotation, 45.0, z_rotation);
+    drawRotatedTeapot(x_rotation, 0.0, z_rotation);
+    glPopMatrix();
+    
+    myRotatef(-45.0, 0.0, 1.0, 0.0);
+    myTranslatef(5.0, 0.0, 0.0);
+    myRotatef(90.0, 0.0, 1.0, 0.0);
+    glPushMatrix();
+//     drawRotatedTeapot(x_rotation, 90.0, z_rotation);
+    drawRotatedTeapot(x_rotation, 0.0, z_rotation);
     glPopMatrix();
 }
 
