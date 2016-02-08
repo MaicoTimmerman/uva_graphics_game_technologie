@@ -2,14 +2,10 @@
  *
  * Filename ........ transformations.c
  * Description ..... Contains the re-programmed translation, rotation and scaling functions
- * Student name ....
- * Student email ...
- * Collegekaart ....
- * Date ............
- * Comments ........
- *
- *
- * (always fill in these fields before submitting!!)
+ * Student name .... Tim van Zalingen & Maico Timmerman
+ * Student email ... timvzalingen@gmail.com & maico.timmerman@gmail.com
+ * Collegekaart .... 10784012 & 10542590
+ * Date ............ 12 Februari 2016
  */
 
 #include <stdio.h>
