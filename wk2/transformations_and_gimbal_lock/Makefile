@@ -23,3 +23,6 @@ transformations.o : transformations.h
 transformations.o : transformations.h transformations.c
 gimbal.o          : transformations.h gimbal.c
 main.o            : transformations.h main.c
+
+run: all
+	./transformations
