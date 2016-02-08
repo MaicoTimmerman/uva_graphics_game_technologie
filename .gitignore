@@ -34,4 +34,5 @@
 main
 transformations
 gimbal
+trirast
 *.tgz
