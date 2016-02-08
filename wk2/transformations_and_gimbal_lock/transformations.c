@@ -55,14 +55,50 @@ void myRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z)
     //
 
     // Store the incoming rotation axis in w and normalize w
+    GLfloat ori_angle = angle;
+    GLfloat ori_x = x;
+    GLfloat ori_y = y;
+    GLfloat ori_z = z;
 
-    // Compute the value of t, based on w
+    // Compute the norm
+    GLfloat len_a = sqrt(x*x + y*y + z*z);
+    //
+    // Normalize the vector
+    w[0] = x/len_a;
+    w[1] = y/len_a;
+    w[2] = z/len_a;
+
+    t[0] = w[0];
+    t[1] = w[1];
+    t[2] = w[2];
+
+    // Set the smallest component of t to 1.
+    t[0] < t[1] && t[0] < t[2] ? (t[0] = 1) : t[1] < t[2] ? (t[1] = 1) : (t[2] = 1);
+
 
     // Compute u = t x w
+    u[0] = t[1]*w[2] - t[2]*w[1];
+    u[1] = t[2]*w[0] - t[0]*w[2];
+    u[2] = t[0]*w[1] - t[1]*w[0];
 
     // Normalize u
+    GLfloat len_u = sqrt(u[0]*u[0] + u[1]*u[1] + u[2]*u[2]);
+    u[0] = u[0] / len_u;
+    u[1] = u[1] / len_u;
+    u[2] = u[2] / len_u;
 
     // Compute v = w x u
+    v[0] = w[1]*u[2] - w[2]*u[1];
+    v[1] = w[2]*u[0] - w[0]*u[2];
+    v[2] = w[0]*u[1] - w[1]*u[0];
+
+    // Normalize v
+    // Not neccessary?
+    /* GLfloat len_v = sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]); */
+    /* v[0] = v[0] / len_v; */
+    /* v[1] = v[1] / len_v; */
+    /* v[2] = v[2] / len_v; */
+
 
     // At this point u, v and w should form an orthonormal basis.
     // If your routine does not seem to work correctly it might be
@@ -73,12 +109,15 @@ void myRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z)
     //
 
     // Specify matrix A
+    printf("u: (%f, %f, %f)", u[0], u[1], u[2]);
+    printf("v: (%f, %f, %f)", v[0], v[1], v[2]);
+    printf("w: (%f, %f, %f)", w[0], w[1], w[2]);
 
     GLfloat A[16] =
     {
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
+        u[0], u[1], u[2], 0.0,
+        v[0], v[1], v[2], 0.0,
+        w[0], w[1], w[2], 0.0,
         0.0, 0.0, 0.0, 1.0
     };
 
@@ -88,8 +127,8 @@ void myRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z)
 
     GLfloat B[16] =
     {
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
+        cos(angle), sin(angle), 0.0, 0.0,
+        -sin(angle), cos(angle), 0.0, 0.0,
         0.0, 0.0, 1.0, 0.0,
         0.0, 0.0, 0.0, 1.0
     };
@@ -98,9 +137,9 @@ void myRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z)
 
     GLfloat C[16] =
     {
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
+        u[0], v[1], w[2], 0.0,
+        u[0], v[1], w[2], 0.0,
+        u[0], v[1], w[2], 0.0,
         0.0, 0.0, 0.0, 1.0
     };
 
