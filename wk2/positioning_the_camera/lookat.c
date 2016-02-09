@@ -52,19 +52,19 @@ void myLookAt(GLdouble eyeX, GLdouble eyeY, GLdouble eyeZ,
 
     normalize(cz);
 
-    // cx = up x cz
-    cross(up, cz, cx);
+    // cx = cz x up
+    cross(cz, up, cx);
     normalize(cx);
 
 
-    // cy = cz x cx
-    cross(cz, cx, cy);
+    // cy = cx x cz
+    cross(cx, cz, cy);
     normalize(cy);
 
     GLdouble V[16] = {
-        -cx[0], cy[0], -cz[0], 0.0,
-        -cx[1], cy[1], -cz[1], 0.0,
-        -cx[2], cy[2], -cz[2], 0.0,
+        cx[0], cy[0], -cz[0], 0.0,
+        cx[1], cy[1], -cz[1], 0.0,
+        cx[2], cy[2], -cz[2], 0.0,
         0.0, 0.0, 0.0, 1.0
     };
 
