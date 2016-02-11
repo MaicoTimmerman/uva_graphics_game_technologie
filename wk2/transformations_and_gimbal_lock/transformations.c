@@ -5,7 +5,7 @@
  * Student name .... Tim van Zalingen & Maico Timmerman
  * Student email ... timvzalingen@gmail.com & maico.timmerman@gmail.com
  * Collegekaart .... 10784012 & 10542590
- * Date ............ 12 Februari 2016
+ * Date ............ 11 Februari 2016
  */
 
 #include <stdio.h>
@@ -19,6 +19,8 @@
 #define M_PI           3.14159265358979323846  /* pi */
 #endif
 
+/* This function is used for debugging and prints a 4x4 matrix when given a
+ * GLfloat pointer. */
 void print_4x4_matrix(GLfloat *A) {
     for (int i = 0; i < 16; i++) {
         if (i % 4 == 0 && i != 0)
@@ -31,6 +33,7 @@ void print_4x4_matrix(GLfloat *A) {
     }
 }
 
+/* This function sets the scaling matrix for a given x, y and z scaling. */
 void myScalef(GLfloat x, GLfloat y, GLfloat z)
 {
     GLfloat M[16] =
@@ -44,7 +47,7 @@ void myScalef(GLfloat x, GLfloat y, GLfloat z)
     glMultMatrixf(M);
 }
 
-
+/* This function sets the translation for a given translation on x, y and z. */
 void myTranslatef(GLfloat x, GLfloat y, GLfloat z)
 {
     GLfloat M[16] =
@@ -58,6 +61,8 @@ void myTranslatef(GLfloat x, GLfloat y, GLfloat z)
     glMultMatrixf(M);
 }
 
+/* This function sets the rotation for a given angle around a vector given by
+ * x, y and z. */
 void myRotatef(GLfloat angle, GLfloat x, GLfloat y, GLfloat z)
 {
     GLfloat u[3], v[3], w[3], t[3];

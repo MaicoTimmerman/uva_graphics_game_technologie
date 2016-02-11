@@ -7,7 +7,16 @@
  * Student name .... Tim van Zalingen & Maico Timmerman
  * Student email ... timvzalingen@gmail.com & maico.timmerman@gmail.com
  * Collegekaart .... 10784012 & 10542590
- * Date ............ 12 Februari 2016
+ * Date ............ 11 Februari 2016
+ * 
+ * This file has the myLookAt function used to rotate the camera around a point
+ * given by centerX, centerY, centerZ. The camera is positioned in eyeX, eyeY
+ * and eyeZ. The camera orientation is set by upX, upY and upZ.
+ * 
+ * void myLookAt(GLdouble eyeX, GLdouble eyeY, GLdouble eyeZ,
+ *               GLdouble centerX, GLdouble centerY, GLdouble centerZ,
+ *               GLdouble upX, GLdouble upY, GLdouble upZ);
+ * 
  */
 #include <GL/glut.h>
 #include <GL/gl.h>
@@ -52,15 +61,16 @@ void myLookAt(GLdouble eyeX, GLdouble eyeY, GLdouble eyeZ,
 
     normalize(cz);
 
-    // cx = cz x up
+    /* cx = cz x up */
     cross(cz, up, cx);
     normalize(cx);
 
 
-    // cy = cx x cz
+    /* cy = cx x cz */
     cross(cx, cz, cy);
     normalize(cy);
-
+    
+    /* Modelview matrix */
     GLdouble V[16] = {
         cx[0], cy[0], -cz[0], 0.0,
         cx[1], cy[1], -cz[1], 0.0,

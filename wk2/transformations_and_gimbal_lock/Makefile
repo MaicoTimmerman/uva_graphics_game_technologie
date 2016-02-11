@@ -25,5 +25,5 @@ gimbal.o          : transformations.h gimbal.c
 main.o            : transformations.h main.c
 
 run: all
-# 	./transformations
+	./transformations
 	./gimbal
