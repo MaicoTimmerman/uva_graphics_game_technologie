@@ -34,5 +34,7 @@
 main
 transformations
 gimbal
+singlecurve
+multicurve
 trirast
 *.tgz
