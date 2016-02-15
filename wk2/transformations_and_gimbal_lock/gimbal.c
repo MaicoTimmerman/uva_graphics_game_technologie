@@ -7,8 +7,12 @@
  * Student name .... Tim van Zalingen & Maico Timmerman
  * Student email ... timvzalingen@gmail.com & maico.timmerman@gmail.com
  * Collegekaart .... 10784012 & 10542590
- * Date ............ 12 Februari 2016
+ * Date ............ 11 Februari 2016
  *
+ * In this file the three teapots are drawn. The drawTeapots function has been
+ * edited to draw three teapots, seperated by 5 on the x-axis and each rotated
+ * by 0, 45 and 90 degrees on the y-axis. The teapots can be moved by using the
+ * mouse and will each rotate around their own axes.
  *
  * Q1
  *  Axes are rotated in the order of x, y and z.
@@ -104,14 +108,18 @@ void drawRotatedTeapot(float rotx, float roty, float rotz)
     glEnd();
 }
 
+/* This function is called from DrawGLScene() below and calls drawRotatedTeapot
+ * to draw the rotated teapots. */
 void drawTeapots(void)
 {
-    /* This function is called from DrawGLScene() below */
     
+    /* The first teapot is drawn without a rotation. */
     glPushMatrix();
     drawRotatedTeapot(x_rotation, 0.0, z_rotation);
     glPopMatrix();
     
+    /* The existing teapots (just the first) are translated and then rotated by
+     * 45 degrees. Aftwerwards we draw a new teapot. */
     myTranslatef(5.0, 0.0, 0.0);
     myRotatef(45.0, 0.0, 1.0, 0.0);
     glPushMatrix();
@@ -119,6 +127,9 @@ void drawTeapots(void)
     drawRotatedTeapot(x_rotation, 0.0, z_rotation);
     glPopMatrix();
     
+    /* Then the existing teapots (the first two) are rotated by -45 degrees and
+     * then translated to the right, after which they are rotated by 90
+     * degrees. Then we draw the last teapot. */
     myRotatef(-45.0, 0.0, 1.0, 0.0);
     myTranslatef(5.0, 0.0, 0.0);
     myRotatef(90.0, 0.0, 1.0, 0.0);
