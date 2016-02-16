@@ -14,6 +14,7 @@
 #include "bezier.h"
 #include <stdio.h>
 
+/* Calculate the factorial of n, fact(0) is 1 */
 int fact(int n) {
     int fact = 1;
     if (n <= 1) return 1;
@@ -42,16 +43,11 @@ void evaluate_bezier_curve(float *x, float *y, control_point p[],
     *y = 0.0;
     float coef;
 
-    printf("x: %f, y: %f\n", *x, *y);
     for (int i = 0; i < num_points; i++) {
         coef = binomial(num_points-1, i);
-        printf("control_x: %f\n", (p+i)->x);
-        printf("control_y: %f\n", (p+i)->y);
-        printf("bern: %f", coef * pow(u, i) * pow(1-u, (num_points-1-i)));
         *x += (coef * pow(u, i) * pow(1-u, (num_points-1-i))) * (p+i)->x;
         *y += (coef * pow(u, i) * pow(1-u, (num_points-1-i))) * (p+i)->y;
     }
-    printf("x: %f, y: %f\n", *x, *y);
     return;
 }
 
@@ -77,12 +73,13 @@ void evaluate_bezier_curve(float *x, float *y, control_point p[],
  */
 void draw_bezier_curve(int num_segments, control_point p[], int num_points) {
 
-    float dx = ((p+num_points-1)->x - p->x) / num_segments;
-    float x, y = 0;
+    float dx = (float)1 / num_segments;
+    float x = 0;
+    float y = 0;
 
     glBegin(GL_LINE_STRIP);
-    for (x = (float)p->x; x <= (p+num_points-1)->x; x+=dx) {
-        evaluate_bezier_curve(&x, &y, p, num_points, x);
+    for (float i = 0; i <= 1.0; i += dx) {
+        evaluate_bezier_curve(&x, &y, p, num_points, i);
         glVertex2f(x, y);
     }
     glEnd();
@@ -94,7 +91,6 @@ void draw_bezier_curve(int num_segments, control_point p[], int num_points) {
    Return 0 if no intersection exists.
    */
 int intersect_cubic_bezier_curve(float *y, control_point p[], float x) {
-    printf("%f  %f %f", *y, p->x, x);
     return 0;
 }
 
