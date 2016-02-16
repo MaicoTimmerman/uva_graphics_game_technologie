@@ -112,11 +112,14 @@ void debug_control_point_print(control_point p[]) {
    Return 0 if no intersection exists.
    */
 int intersect_cubic_bezier_curve(float *y, control_point p[], float x) {
+    printf("----");
     printf("x=%f\n", x);
-    debug_control_point_print(p);
+    fflush(stdout);
+    /* debug_control_point_print(p); */
     control_point *lower_p = p;
     control_point *upper_p = p+3;
-//     int i = 0;
+
+    /* Find in which bezier curve the x is located */
     while (!(lower_p->x <= x && upper_p->x >= x)) {
         lower_p = lower_p + 3;
         upper_p = upper_p + 3;
@@ -125,27 +128,29 @@ int intersect_cubic_bezier_curve(float *y, control_point p[], float x) {
             return 0;
         }
     }
-    
+
     printf("From %f to %f, looking for %f\n", lower_p->x, upper_p->x, x);
     printf("u=%f\n", (x - lower_p->x) / (upper_p->x - lower_p->x));
-    float x_new, y_new;
-    
-    float u = (x - lower_p->x) / (upper_p->x - lower_p->x);
+    fflush(stdout);
+
+    float x_new, y_new, du, u;
+
+    u = (x - lower_p->x) / (upper_p->x - lower_p->x);
     evaluate_bezier_curve(&x_new, &y_new, lower_p, 4, u);
-    float du;
-    
-    while (fabs(x - x_new) > 0.001 && fabs(du) != 0.0) {
-        du = u - (x_new - lower_p->x) / (upper_p->x - lower_p->x);
-        u = u + du;
-        printf("%f, du=%f\n", fabs(x - x_new), du);
+
+    while (fabs(x_new - x) - 0.0009 < 0.00001) {
+        printf("fabs: %f", fabs(x_new-x));
+        du = (x_new - x) / (upper_p->x - lower_p->x);
+        u = u - du;
+        printf("u: %f, du: %f\n", u, du);
+        fflush(stdout);
         evaluate_bezier_curve(&x_new, &y_new, lower_p, 4, u);
     }
-    
-    
+
     *y = y_new;
-    printf("%f, %f", x_new, y);
+    printf("%f, %f", x_new, *y);
     printf("\n");
-    
+
     return 1;
 }
 
