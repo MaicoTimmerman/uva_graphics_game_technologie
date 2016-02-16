@@ -85,12 +85,52 @@ void draw_bezier_curve(int num_segments, control_point p[], int num_points) {
     glEnd();
 }
 
+void debug_control_point_print(control_point p[]) {
+    printf("0: \tx=%f, \ty=%f\n",p->x, p->y);
+    printf("1: \tx=%f, \ty=%f\n",(p+1)->x, (p+1)->y);
+    printf("2: \tx=%f, \ty=%f\n",(p+2)->x, (p+2)->y);
+    printf("3: \tx=%f, \ty=%f\n",(p+3)->x, (p+3)->y);
+    printf("4: \tx=%f, \ty=%f\n",(p+4)->x, (p+4)->y);
+    printf("5: \tx=%f, \ty=%f\n",(p+5)->x, (p+5)->y);
+    printf("6: \tx=%f, \ty=%f\n",(p+6)->x, (p+6)->y);
+    printf("7: \tx=%f, \ty=%f\n",(p+7)->x, (p+7)->y);
+    printf("8: \tx=%f, \ty=%f\n",(p+8)->x, (p+8)->y);
+    printf("9: \tx=%f, \ty=%f\n",(p+9)->x, (p+9)->y);
+    printf("10: \tx=%f, \ty=%f\n",(p+10)->x, (p+10)->y);
+    printf("11: \tx=%f, \ty=%f\n",(p+11)->x, (p+11)->y);
+    printf("12: \tx=%f, \ty=%f\n",(p+12)->x, (p+12)->y);
+    printf("13: \tx=%f, \ty=%f\n",(p+13)->x, (p+13)->y);
+    printf("14: \tx=%f, \ty=%f\n",(p+14)->x, (p+14)->y);
+    printf("15: \tx=%f, \ty=%f\n",(p+15)->x, (p+15)->y);
+    printf("16: \tx=%f, \ty=%f\n",(p+16)->x, (p+16)->y);
+    printf("17: \tx=%f, \ty=%f\n",(p+17)->x, (p+17)->y);
+}
+
 /* Find the intersection of a cubic Bezier curve with the line X=x.
    Return 1 if an intersection was found and place the corresponding y
    value in *y.
    Return 0 if no intersection exists.
    */
 int intersect_cubic_bezier_curve(float *y, control_point p[], float x) {
+    printf("x=%f\n", x);
+    debug_control_point_print(p);
+    control_point *lower_p = p;
+    control_point *upper_p = p+3;
+//     int i = 0;
+    while (!(lower_p->x <= x && upper_p->x >= x)) {
+        lower_p = lower_p + 3;
+        upper_p = upper_p + 3;
+    }
+    
+    printf("From %f to %f, looking for %f\n", lower_p->x, upper_p->x, x);
+    printf("u=%f\n", (x - lower_p->x) / (upper_p->x - lower_p->x));
+    float x_new, y_new;
+    evaluate_bezier_curve(&x_new, &y_new, lower_p, 4, (x - lower_p->x) / (upper_p->x - lower_p->x));
+    *y = y_new;
+    printf("%f", y);
+    printf("\n");
+    
+    return 1;
     return 0;
 }
 

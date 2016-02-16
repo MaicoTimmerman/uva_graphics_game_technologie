@@ -36,4 +36,4 @@ rply.o          : rply.c rply.h
 physics.o       : physics.h
 
 run: all
-	./singlecurve
+	./multicurve
