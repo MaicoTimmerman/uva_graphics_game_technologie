@@ -120,17 +120,32 @@ int intersect_cubic_bezier_curve(float *y, control_point p[], float x) {
     while (!(lower_p->x <= x && upper_p->x >= x)) {
         lower_p = lower_p + 3;
         upper_p = upper_p + 3;
+        if (x >= upper_p->x) {
+            *y = 0.0;
+            return 0;
+        }
     }
     
     printf("From %f to %f, looking for %f\n", lower_p->x, upper_p->x, x);
     printf("u=%f\n", (x - lower_p->x) / (upper_p->x - lower_p->x));
     float x_new, y_new;
-    evaluate_bezier_curve(&x_new, &y_new, lower_p, 4, (x - lower_p->x) / (upper_p->x - lower_p->x));
+    
+    float u = (x - lower_p->x) / (upper_p->x - lower_p->x);
+    evaluate_bezier_curve(&x_new, &y_new, lower_p, 4, u);
+    float du;
+    
+    while (fabs(x - x_new) > 0.001 && fabs(du) != 0.0) {
+        du = u - (x_new - lower_p->x) / (upper_p->x - lower_p->x);
+        u = u + du;
+        printf("%f, du=%f\n", fabs(x - x_new), du);
+        evaluate_bezier_curve(&x_new, &y_new, lower_p, 4, u);
+    }
+    
+    
     *y = y_new;
-    printf("%f", y);
+    printf("%f, %f", x_new, y);
     printf("\n");
     
     return 1;
-    return 0;
 }
 
