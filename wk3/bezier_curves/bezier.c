@@ -112,45 +112,43 @@ void debug_control_point_print(control_point p[]) {
    Return 0 if no intersection exists.
    */
 int intersect_cubic_bezier_curve(float *y, control_point p[], float x) {
-    printf("----");
-    printf("x=%f\n", x);
-    fflush(stdout);
-    /* debug_control_point_print(p); */
-    control_point *lower_p = p;
-    control_point *upper_p = p+3;
 
-    /* Find in which bezier curve the x is located */
-    while (!(lower_p->x <= x && upper_p->x >= x)) {
-        lower_p = lower_p + 3;
-        upper_p = upper_p + 3;
-        if (x >= upper_p->x) {
-            *y = 0.0;
-            return 0;
+
+    /* Check if the points are actually in the curve. */
+    if (!(x >= p->x && x <= (p+3)->x)) {
+        return 0;
+    }
+
+    float nx, ny;
+    /* double min = 0.0; */
+    /* double max = 1.0; */
+    /* double u = (max - min) / 2; */
+
+    /* Calculate the initial u */
+    for (float u = 0.0; u < 1.0; u+=0.0001) {
+        evaluate_bezier_curve(&nx, &ny, p, 4, u);
+        if (fabs(nx-x) < 0.0001) {
+            *y = ny;
+            return 1;
         }
     }
+    return 0;
 
-    printf("From %f to %f, looking for %f\n", lower_p->x, upper_p->x, x);
-    printf("u=%f\n", (x - lower_p->x) / (upper_p->x - lower_p->x));
-    fflush(stdout);
 
-    float x_new, y_new, du, u;
-
-    u = (x - lower_p->x) / (upper_p->x - lower_p->x);
-    evaluate_bezier_curve(&x_new, &y_new, lower_p, 4, u);
-
-    while (fabs(x_new - x) - 0.0009 < 0.00001) {
-        printf("fabs: %f", fabs(x_new-x));
-        du = (x_new - x) / (upper_p->x - lower_p->x);
-        u = u - du;
-        printf("u: %f, du: %f\n", u, du);
-        fflush(stdout);
-        evaluate_bezier_curve(&x_new, &y_new, lower_p, 4, u);
-    }
-
-    *y = y_new;
-    printf("%f, %f", x_new, *y);
-    printf("\n");
-
-    return 1;
+    /* while (!(fabs(nx - x) < 0.001)) { */
+    /*     printf("fabs(xn-x): %f, max: %f, min %f\n", fabs(nx - x), max, min); */
+    /*     fflush(stdout); */
+    /*     if (nx > x) { */
+    /*         max = u; */
+    /*     } else { */
+    /*         min = u; */
+    /*     } */
+    /*     u = (max - min) / 2; */
+    /*     evaluate_bezier_curve(&nx, &ny, p, 4, u); */
+    /* } */
+    /*  */
+    /* return 0; */
+    /* *y = ny; */
+    /* return 1; */
 }
 
