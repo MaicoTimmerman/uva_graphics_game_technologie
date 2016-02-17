@@ -24,6 +24,7 @@ int fact(int n) {
     return fact;
 }
 
+/* Calculate n!/(n!*(n-k)!) */
 float binomial(int n, int k) {
     return (float)fact(n) / (float)(fact(k) * fact(n-k));
 }
@@ -34,8 +35,7 @@ float binomial(int n, int k) {
  * value 'u', which is the timestep in the curve.
  *
  * Return the x and y values of the point by setting *x and *y,
- * respectively.
- */
+ * respectively.  */
 void evaluate_bezier_curve(float *x, float *y, control_point p[],
         int num_points, float u) {
 
@@ -69,8 +69,7 @@ void evaluate_bezier_curve(float *x, float *y, control_point p[],
  * to approximate the curve.
  *
  * Call evaluate_bezier_curve() to compute the necessary points on
- * the curve.
- */
+ * the curve.  */
 void draw_bezier_curve(int num_segments, control_point p[], int num_points) {
 
     float dx = (float)1 / num_segments;
@@ -85,44 +84,18 @@ void draw_bezier_curve(int num_segments, control_point p[], int num_points) {
     glEnd();
 }
 
-void debug_control_point_print(control_point p[]) {
-    printf("0: \tx=%f, \ty=%f\n",p->x, p->y);
-    printf("1: \tx=%f, \ty=%f\n",(p+1)->x, (p+1)->y);
-    printf("2: \tx=%f, \ty=%f\n",(p+2)->x, (p+2)->y);
-    printf("3: \tx=%f, \ty=%f\n",(p+3)->x, (p+3)->y);
-    printf("4: \tx=%f, \ty=%f\n",(p+4)->x, (p+4)->y);
-    printf("5: \tx=%f, \ty=%f\n",(p+5)->x, (p+5)->y);
-    printf("6: \tx=%f, \ty=%f\n",(p+6)->x, (p+6)->y);
-    printf("7: \tx=%f, \ty=%f\n",(p+7)->x, (p+7)->y);
-    printf("8: \tx=%f, \ty=%f\n",(p+8)->x, (p+8)->y);
-    printf("9: \tx=%f, \ty=%f\n",(p+9)->x, (p+9)->y);
-    printf("10: \tx=%f, \ty=%f\n",(p+10)->x, (p+10)->y);
-    printf("11: \tx=%f, \ty=%f\n",(p+11)->x, (p+11)->y);
-    printf("12: \tx=%f, \ty=%f\n",(p+12)->x, (p+12)->y);
-    printf("13: \tx=%f, \ty=%f\n",(p+13)->x, (p+13)->y);
-    printf("14: \tx=%f, \ty=%f\n",(p+14)->x, (p+14)->y);
-    printf("15: \tx=%f, \ty=%f\n",(p+15)->x, (p+15)->y);
-    printf("16: \tx=%f, \ty=%f\n",(p+16)->x, (p+16)->y);
-    printf("17: \tx=%f, \ty=%f\n",(p+17)->x, (p+17)->y);
-}
-
 /* Find the intersection of a cubic Bezier curve with the line X=x.
-   Return 1 if an intersection was found and place the corresponding y
-   value in *y.
-   Return 0 if no intersection exists.
-   */
+ * Return 1 if an intersection was found and place the corresponding y
+ * value in *y.
+ * Return 0 if no intersection exists.  */
 int intersect_cubic_bezier_curve(float *y, control_point p[], float x) {
 
+    float nx, ny;
 
     /* Check if the points are actually in the curve. */
     if (!(x >= p->x && x <= (p+3)->x)) {
         return 0;
     }
-
-    float nx, ny;
-    /* double min = 0.0; */
-    /* double max = 1.0; */
-    /* double u = (max - min) / 2; */
 
     /* Calculate the initial u */
     for (float u = 0.0; u < 1.0; u+=0.0001) {
@@ -135,20 +108,18 @@ int intersect_cubic_bezier_curve(float *y, control_point p[], float x) {
     return 0;
 
 
-    /* while (!(fabs(nx - x) < 0.001)) { */
-    /*     printf("fabs(xn-x): %f, max: %f, min %f\n", fabs(nx - x), max, min); */
-    /*     fflush(stdout); */
-    /*     if (nx > x) { */
-    /*         max = u; */
-    /*     } else { */
-    /*         min = u; */
-    /*     } */
-    /*     u = (max - min) / 2; */
-    /*     evaluate_bezier_curve(&nx, &ny, p, 4, u); */
-    /* } */
-    /*  */
-    /* return 0; */
-    /* *y = ny; */
-    /* return 1; */
+    /*
+    while (!(fabs(nx - x) < 0.001)) {
+        if (nx > x) {
+            max = u;
+        } else {
+            min = u;
+        }
+        u = (max - min) / 2;
+        evaluate_bezier_curve(&nx, &ny, p, 4, u);
+    }
+    *y = ny;
+    return 1;
+    */
 }
 
