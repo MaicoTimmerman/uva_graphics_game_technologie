@@ -37,3 +37,6 @@ intersection.o : types.h intersection.h
 intersection.o : bvh.h constants.h intersection.h scene.h v3math.h intersection.c
 bbox.o         : bbox.h constants.h v3math.h bbox.c
 bbox.o         : types.h bbox.h
+
+run: all
+	./main cow.scn
