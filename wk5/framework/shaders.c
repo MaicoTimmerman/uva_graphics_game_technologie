@@ -27,6 +27,10 @@
 // based on normal, light position, etc. As such, it merely creates
 // a "silhouette" of an object.
 
+float max(float a, float b) {
+    return a > b ? a : b;
+}
+
 vec3
 shade_constant(intersection_point ip)
 {
@@ -36,8 +40,18 @@ shade_constant(intersection_point ip)
 vec3
 shade_matte(intersection_point ip)
 {
-    float light = v3_dotprod(ip.i, ip.n);
-    light = (light > 0 ? light : 0);
+    vec3 shade_vec;
+    float light = scene_ambient_light;
+    for (int i = 0; i < scene_num_lights; ++i) {
+        vec3 light_pos = scene_lights[i].position;
+
+        shade_vec = v3_normalize(v3_subtract(scene_lights[i].position, ip.p));
+        if (!shadow_check(v3_multiply(ip.p, 1.001), shade_vec)) {
+            light += max(0, scene_lights[i].intensity * v3_dotprod(ip.n, shade_vec));
+        }
+    }
+
+    if (light > 1.0) light = 1.0;
 
     return v3_create(light, light, light);
 }
