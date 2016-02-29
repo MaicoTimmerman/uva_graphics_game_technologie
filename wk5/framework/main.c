@@ -196,8 +196,25 @@ ray_trace(void)
             // ...
             // ...
             // ...
+//             float y = j * image_plane_height / framebuffer_height;
+//             float x = i * image_plane_width / framebuffer_width;
+            vec3 vector;
+            vector.x = forward_vector.x - .5 * image_plane_height * up_vector.x - .5 * image_plane_width * right_vector.x;
+            vector.y = forward_vector.y - .5 * image_plane_height * up_vector.y - .5 * image_plane_width * right_vector.y;
+            vector.z = forward_vector.z - .5 * image_plane_height * up_vector.z - .5 * image_plane_width * right_vector.z;
+            
+            vector.x = vector.x + j * image_plane_height / framebuffer_height * up_vector.x + i * image_plane_width / framebuffer_width * right_vector.x;
+            vector.y = vector.y + j * image_plane_height / framebuffer_height * up_vector.y + i * image_plane_width / framebuffer_width * right_vector.y;
+            vector.z = vector.z + j * image_plane_height / framebuffer_height * up_vector.z + i * image_plane_width / framebuffer_width * right_vector.z;
+            
+            color = ray_color(0, scene_camera_position, vector);
+//             vector.x = i * image_plane_height / framebuffer_height + forward_vector.x -.5 * image_plane_height / framebuffer_height * up_vector.x + j * image_plane_width / framebuffer_width - .5 * image_plane_width / framebuffer_width * right_vector.x;
+//             vector.y = i * image_plane_height / framebuffer_height + forward_vector.y -.5 * image_plane_height / framebuffer_height * up_vector.y + j * image_plane_width / framebuffer_width - .5 * image_plane_width / framebuffer_width * right_vector.y;
+//             vector.z = i * image_plane_height / framebuffer_height + forward_vector.z -.5 * image_plane_height / framebuffer_height * up_vector.z + j * image_plane_width / framebuffer_width - .5 * image_plane_width / framebuffer_width * right_vector.z;color = ray_color(0, scene_camera_position, vector);
+//             x = 1/2 * image_plane_height * right.x
 
             // Output pixel color
+//             put_pixel(x, y, color.x, color.y, color.z);
             put_pixel(i, j, color.x, color.y, color.z);
         }
 
