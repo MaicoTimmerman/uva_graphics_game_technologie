@@ -36,7 +36,10 @@ shade_constant(intersection_point ip)
 vec3
 shade_matte(intersection_point ip)
 {
-    return v3_create(1, 0, 0);
+    float light = v3_dotprod(ip.i, ip.n);
+    light = (light > 0 ? light : 0);
+
+    return v3_create(light, light, light);
 }
 
 vec3
