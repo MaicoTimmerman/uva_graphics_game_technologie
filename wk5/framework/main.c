@@ -118,9 +118,9 @@ put_pixel(int x, int y, float r, float g, float b)
 void
 setup_camera(void)
 {
-    float	cx, cy, cz;
-    float	t;
-    float 	beta, gamma;
+    float   cx, cy, cz;
+    float   t;
+    float   beta, gamma;
 
     // degrees -> radians
     beta = camAzimuth / 180.0 * M_PI;
@@ -132,14 +132,14 @@ setup_camera(void)
     // Rotate around Y
     t = cx;
     cx = cx * cos(beta) + cz * sin(beta);
-	// cy remains unchanged
+    // cy remains unchanged
     cz = -t * sin(beta) + cz * cos(beta);
 
     // Rotate around Z
     t = cx;
     cx = cx * cos(gamma) - cy * sin(gamma);
     cy = t * sin(gamma) + cy * cos(gamma);
-	// cz remains unchanged
+    // cz remains unchanged
 
     scene_camera_position.x = cx;
     scene_camera_position.y = cy;
@@ -184,37 +184,32 @@ ray_trace(void)
     image_plane_height = 2.0 * tan(0.5*VFOV/180*M_PI);
     image_plane_width = image_plane_height * (1.0 * framebuffer_width / framebuffer_height);
 
-    // ...
-    // ...
-    // ...
+    float step_size_x = image_plane_width / framebuffer_width;
+    float step_size_y = image_plane_height / framebuffer_height;
+
+    float start_x = step_size_x * 0.5;
+    float start_y = step_size_y * 0.5;
+
+    float center_x = 0.5 * image_plane_width;
+    float center_y = 0.5 * image_plane_height;
+
+    vec3 nvector;
 
     // Loop over all pixels in the framebuffer
-    for (j = 0; j < framebuffer_height; j++)
-    {
-        for (i = 0; i < framebuffer_width; i++)
-        {
-            // ...
-            // ...
-            // ...
-//             float y = j * image_plane_height / framebuffer_height;
-//             float x = i * image_plane_width / framebuffer_width;
-            vec3 vector;
-            vector.x = forward_vector.x - .5 * image_plane_height * up_vector.x - .5 * image_plane_width * right_vector.x;
-            vector.y = forward_vector.y - .5 * image_plane_height * up_vector.y - .5 * image_plane_width * right_vector.y;
-            vector.z = forward_vector.z - .5 * image_plane_height * up_vector.z - .5 * image_plane_width * right_vector.z;
-            
-            vector.x = vector.x + j * image_plane_height / framebuffer_height * up_vector.x + i * image_plane_width / framebuffer_width * right_vector.x;
-            vector.y = vector.y + j * image_plane_height / framebuffer_height * up_vector.y + i * image_plane_width / framebuffer_width * right_vector.y;
-            vector.z = vector.z + j * image_plane_height / framebuffer_height * up_vector.z + i * image_plane_width / framebuffer_width * right_vector.z;
-            
-            color = ray_color(0, scene_camera_position, vector);
-//             vector.x = i * image_plane_height / framebuffer_height + forward_vector.x -.5 * image_plane_height / framebuffer_height * up_vector.x + j * image_plane_width / framebuffer_width - .5 * image_plane_width / framebuffer_width * right_vector.x;
-//             vector.y = i * image_plane_height / framebuffer_height + forward_vector.y -.5 * image_plane_height / framebuffer_height * up_vector.y + j * image_plane_width / framebuffer_width - .5 * image_plane_width / framebuffer_width * right_vector.y;
-//             vector.z = i * image_plane_height / framebuffer_height + forward_vector.z -.5 * image_plane_height / framebuffer_height * up_vector.z + j * image_plane_width / framebuffer_width - .5 * image_plane_width / framebuffer_width * right_vector.z;color = ray_color(0, scene_camera_position, vector);
-//             x = 1/2 * image_plane_height * right.x
+    for (j = 0; j < framebuffer_height; j++) {
+        for (i = 0; i < framebuffer_width; i++) {
+            float image_plane_x = start_x + (i * step_size_x);
+            float image_plane_y = start_y + (j * step_size_y);
 
-            // Output pixel color
-//             put_pixel(x, y, color.x, color.y, color.z);
+            float u = image_plane_x - center_x;
+            float v = center_y - image_plane_y;
+
+            nvector = v3_add(
+                    v3_add(v3_multiply(right_vector, u), v3_multiply(up_vector, v)),
+                    forward_vector);
+
+            color = ray_color(0, scene_camera_position, nvector);
+
             put_pixel(i, j, color.x, color.y, color.z);
         }
 
@@ -406,7 +401,7 @@ draw_scene(void)
         glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, zero);
         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, one);
 
-		// Draw the triangles in the scene
+        // Draw the triangles in the scene
 
         triangle    tri;
         int         p, q, r;
@@ -457,7 +452,7 @@ draw_scene(void)
             glEnable(GL_LIGHTING);
         }
 
-		// Draw the spheres in the scene
+        // Draw the spheres in the scene
 
         for (int s = 0; s < scene_num_spheres; s++)
         {
@@ -478,23 +473,23 @@ draw_scene(void)
                 draw_bvh_inner_nodes(1, bvh_root);
         }
 
-		/*
-		// Draw some axes
+        /*
+        // Draw some axes
 
-		glDisable(GL_LIGHTING);
+        glDisable(GL_LIGHTING);
 
-		glBegin(GL_LINES);
-			glColor3f(1, 0, 0);
-			glVertex3f(0, 0, 0);
-			glVertex3f(10, 0, 0);
-			glColor3f(0, 1, 0);
-			glVertex3f(0, 0, 0);
-			glVertex3f(0, 10, 0);
-			glColor3f(0, 0, 1);
-			glVertex3f(0, 0, 0);
-			glVertex3f(0, 0, 10);
-		glEnd();
-		*/
+        glBegin(GL_LINES);
+            glColor3f(1, 0, 0);
+            glVertex3f(0, 0, 0);
+            glVertex3f(10, 0, 0);
+            glColor3f(0, 1, 0);
+            glVertex3f(0, 0, 0);
+            glVertex3f(0, 10, 0);
+            glColor3f(0, 0, 1);
+            glVertex3f(0, 0, 0);
+            glVertex3f(0, 0, 10);
+        glEnd();
+        */
     }
 
     // finally, swap the draw buffers to make the triangles appear on screen
@@ -736,7 +731,7 @@ main(int argc, char **argv)
     glutMouseFunc(&mouse_func);
     glutMotionFunc(&motion_func);
 
-	read_scene(argv[1]);
+    read_scene(argv[1]);
 
     init_opengl();
     init_noise();
