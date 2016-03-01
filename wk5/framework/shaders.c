@@ -88,9 +88,9 @@ shade_blinn_phong(intersection_point ip)
     light_diffuse += (0.8 * cur_diffuse);
     light_specular += (0.5 * cur_specular);
 
-    return v3_create(light_diffuse+light_specular,
-                     light_diffuse+light_specular,
-                     light_diffuse+light_specular);
+    return v3_create(light_diffuse+light_specular, 0, 0);
+                     /* light_diffuse+light_specular, */
+                     /* light_diffuse+light_specular); */
 
 
     /* float */
