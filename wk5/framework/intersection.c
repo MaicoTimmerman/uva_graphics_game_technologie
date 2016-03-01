@@ -166,6 +166,44 @@ ray_intersects_sphere(intersection_point* ip, sphere sph,
     return 1;
 }
 
+int 
+find_next_intersected_bvh_triangle(intersection_point* ip, float* t_min,
+    float* t_max, vec3 ray_origin, vec3 ray_direction, bvh_node current_node)
+{
+//     int intersection = 0;
+//     float new_t_min, new_t_max;
+//     intersection_point new_ip;
+//     if (bvh_node.is_leaf == 0) {
+//         if (find_next_intersected_bvh_triangle(&new_ip, &new_t_min, &new_t_max, ray_origin, ray_direction, bvh_root->inner->left_child)) {
+//             intersection = 1;
+//         }
+//         if (find_next_intersected_bvh_triangle(&new_ip, &new_t_min, &new_t_max, ray_origin, ray_direction, bvh_root->inner->right_child)) {
+//             intersection = 1;
+//         }
+//         if (intersection) {
+//             return 1;
+//         }
+//     }
+//     else {
+//         for (int i; i < bvh_node->leaf->num_triangles; i++) {
+//             intersection_point new_ip;
+//             if (ray_intersects_triangle(intersection_point* new_ip, triangles[i], ray_origin, ray_direction)) {
+//                 if (ip == NULL) {
+//                     ip = new_ip;
+//                 }
+//                 else if (new_ip.t < ip.t) {
+//                     ip = new_ip;
+//                 }
+//                 intersection = 1;
+//             }
+//         }
+//         if (intersection) {
+//             return 1;
+//         }
+//     }
+    return 0;
+}
+
 // Checks for an intersection of the given ray with the triangles
 // stored in the BVH.
 //
@@ -174,11 +212,25 @@ ray_intersects_sphere(intersection_point* ip, sphere sph,
 // will be the one closest to the ray origin.
 //
 // Returns 0 if there are no intersections
-
 static int
 find_first_intersected_bvh_triangle(intersection_point* ip,
     vec3 ray_origin, vec3 ray_direction)
 {
+    // Root from : bvh_root
+//     printf("ROOT is_leaf: %d\n", bvh_root->is_leaf);
+//     float t_min, t_max;
+//     int intersection = 0;
+//     if (bbox_intersect(&t_min, &t_max, bvh_root->bbox, ray_origin, ray_direction, 0., 1000.)) {
+//         if (find_next_intersected_bvh_triangle(&ip, &t_min, &t_max, ray_origin, ray_direction, bvh_root->inner->left_child)) {
+//             intersection = 1;
+//         }
+//         if (find_next_intersected_bvh_triangle(&ip, &t_min, &t_max, ray_origin, ray_direction, bvh_root->inner->right_child)) {
+//             intersection = 1;
+//         }
+//         if (intersection) {
+//             return 1;
+//         }
+//     }
     return 0;
 }
 
