@@ -547,6 +547,7 @@ key_pressed(unsigned char key, int x, int y)
             // (forces immediate re-render)
             use_bvh = 1 - use_bvh;
             printf("use_bvh set to %d\n", use_bvh);
+            fflush(stdout);
             needs_rerender = 1;
             glutPostRedisplay();
             break;
