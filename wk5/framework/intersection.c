@@ -166,8 +166,19 @@ ray_intersects_sphere(intersection_point* ip, sphere sph,
     return 1;
 }
 
+// Recursivly checks for an intersection of the given ray with the triangles
+// stored in the BVH.
+//
+// Returns 1 if there is an intersection. The fields of 'ip' will be
+// set to the relevant values. The intersection returned
+// will be the one closest to the ray origin.
+//
+// Returns 0 if there are no intersections.
 int find_next_bvh_ip(
-        bvh_node* cnode, intersection_point* ip, vec3 ray_origin, vec3 ray_dir) {
+        bvh_node* cnode,
+        intersection_point* ip,
+        vec3 ray_origin,
+        vec3 ray_dir) {
 
     float nt_min_left, nt_max_left;
     float nt_min_right, nt_max_right;
@@ -176,32 +187,42 @@ int find_next_bvh_ip(
     int right_bb = 0;
 
     if (cnode->is_leaf) {
-        // Check if the ray intersects with any of the triangles in the current
-        // bounding box.
+        // Check if the ray intersects with any of the triangles in the
+        // current bounding box.
         for (int i = 0; i < cnode->u.leaf.num_triangles; i++) {
 
             intersection_point new_ip;
+            new_ip.t = C_INFINITY;
 
-            if (ray_intersects_triangle(&new_ip, cnode->u.leaf.triangles[i], ray_origin, ray_dir)) {
-                if (new_ip.t < ip->t) {
-                    *ip = new_ip;
-                    intersection = 1;
-                }
+            // Test if there is an intersection, if there is, replace the
+            // current intersection with the newly found one.
+            if (ray_intersects_triangle(&new_ip, cnode->u.leaf.triangles[i],
+                        ray_origin, ray_dir) && (new_ip.t < ip->t)) {
+                *ip = new_ip;
+                intersection = 1;
             }
         }
         return intersection;
     }
 
+    // Since the node is not a leaf, it has children. Check for both of the
+    // children if the ray intersects the boundingbox of the node.
     left_bb = bbox_intersect(&nt_min_left, &nt_max_left,
             cnode->u.inner.left_child->bbox, ray_origin, ray_dir, 0, C_INFINITY);
     right_bb = bbox_intersect(&nt_min_right, &nt_max_right,
             cnode->u.inner.right_child->bbox, ray_origin, ray_dir, 0, C_INFINITY);
 
+    // Both bounding boxes are intersected.
     if (left_bb && right_bb) {
         // Check if the current intersection point is closer then both the
-        // bounding boxes.
+        // bounding boxes. If so, no need to further check the for
+        // intersections.
         if (nt_min_left > ip->t && nt_min_right > ip->t) return 0;
 
+        // Test which bounding box is closest to the origin, check for that
+        // box first. After that check if the start of the other bounding box
+        // is closer then the intersection point. If so, check the other
+        // bounding box as well for intersections.
         if (nt_min_left < nt_min_right) {
             intersection = find_next_bvh_ip(cnode->u.inner.left_child, ip, ray_origin, ray_dir);
             if (nt_min_right < ip->t)
@@ -211,27 +232,24 @@ int find_next_bvh_ip(
             if (nt_min_left < ip->t)
                 intersection |= find_next_bvh_ip(cnode->u.inner.left_child, ip, ray_origin, ray_dir);
         }
-
         return intersection;
     }
 
-    if (left_bb) {
-        if (nt_min_left < ip->t) {
-            return find_next_bvh_ip(cnode->u.inner.left_child, ip, ray_origin, ray_dir);
-        }
+    // Test if the intersection point is further then the start of the bounding
+    // box and if there even was a collision for both children
+    if (left_bb && nt_min_left < ip->t) {
+        return find_next_bvh_ip(cnode->u.inner.left_child, ip, ray_origin, ray_dir);
+    }
+    if (right_bb && nt_min_right < ip->t) {
+        return find_next_bvh_ip(cnode->u.inner.right_child, ip, ray_origin, ray_dir);
     }
 
-    if (right_bb) {
-        if (nt_min_right < ip->t) {
-            return find_next_bvh_ip(cnode->u.inner.right_child, ip, ray_origin, ray_dir);
-        }
-    }
-
+    // No Intersection was found.
     return 0;
 }
 
 // Checks for an intersection of the given ray with the triangles
-// stored in the BVH.
+// stored in the BVH using the recursive function find_next_bvh_ip.
 //
 // Returns 1 if there is an intersection. The fields of 'ip' will be
 // set to the relevant values. The intersection returned
@@ -240,11 +258,8 @@ int find_next_bvh_ip(
 // Returns 0 if there are no intersections
 static int find_first_intersected_bvh_triangle(
         intersection_point* ip, vec3 ray_origin, vec3 ray_dir) {
-
-
     ip->t = C_INFINITY;
     return find_next_bvh_ip(bvh_root, ip, ray_origin, ray_dir);
-
 }
 
 // Returns the nearest hit of the given ray with objects in the scene
