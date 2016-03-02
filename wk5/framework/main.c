@@ -1,13 +1,9 @@
 /* Computer Graphics and Game Technology, Assignment Ray-tracing
  *
- * Student name ....
- * Student email ...
- * Collegekaart ....
- * Date ............
- * Comments ........
- *
- *
- * (always fill in these fields before submitting!!)
+ * Student name .... Maico Timmerman, Tim van Zalingen
+ * Student email ... maico.timmerman@gmail.com, timvzalingen@gmail.com
+ * Collegekaart .... 10542590, 10784012
+ * Date ............ 4 maart 2015
  */
 
 #include <sys/time.h>
@@ -186,7 +182,7 @@ ray_trace(void)
 
     float step_size_x = image_plane_width / framebuffer_width;
     float step_size_y = image_plane_height / framebuffer_height;
-    
+
     float aa_step_size_x = step_size_x / 4;
     float aa_step_size_y = step_size_y / 4;
 
@@ -197,6 +193,9 @@ ray_trace(void)
     float center_y = 0.5 * image_plane_height;
 
     vec3 nvector;
+    vec3 offset;
+    vec3 new_nvector;
+    vec3 total_color = v3_create(0., 0., 0.);
 
     // Loop over all pixels in the framebuffer
     for (j = 0; j < framebuffer_height; j++) {
@@ -210,7 +209,10 @@ ray_trace(void)
             nvector = v3_add(
                     v3_add(v3_multiply(right_vector, u), v3_multiply(up_vector, v)),
                     forward_vector);
-            
+
+            // If not antialiasing, use a single ray to determine the color of
+            // the pixel. If it is, use four at (-)0.25 offset from the center
+            // of the pixel projection on the image plane.
             if (!do_antialiasing) {
                 color = ray_color(0, scene_camera_position, nvector);
             }
@@ -219,14 +221,16 @@ ray_trace(void)
                     -1 * aa_step_size_x, aa_step_size_y,
                     aa_step_size_x, -1 * aa_step_size_y,
                     -1 * aa_step_size_x, -1 * aa_step_size_y};
-                vec3 offset;
-                vec3 new_nvector;
-                vec3 total_color = v3_create(0., 0., 0.);
+
+                // For all four vectors, calculate the offset vector, based of
+                // the up_vector and forward_vector.
                 for (int k = 0; k < 8; k += 2) {
                     offset = v3_add(v3_multiply(right_vector, offsets[k]), v3_multiply(up_vector, offsets[k+1]));
                     new_nvector = v3_add(nvector, offset);
                     total_color = v3_add(total_color, ray_color(0, scene_camera_position, new_nvector));
                 }
+                // Calculate the color of the pixel by averaging the color of
+                // all four vectors.
                 color = v3_multiply(total_color, 0.25);
             }
 

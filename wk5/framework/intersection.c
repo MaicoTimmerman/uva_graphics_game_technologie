@@ -1,13 +1,9 @@
 /* Computer Graphics and Game Technology, Assignment Ray-tracing
  *
- * Student name ....
- * Student email ...
- * Collegekaart ....
- * Date ............
- * Comments ........
- *
- *
- * (always fill in these fields before submitting!!)
+ * Student name .... Maico Timmerman, Tim van Zalingen
+ * Student email ... maico.timmerman@gmail.com, timvzalingen@gmail.com
+ * Collegekaart .... 10542590, 10784012
+ * Date ............ 4 maart 2015
  */
 
 #include <math.h>

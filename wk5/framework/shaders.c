@@ -1,13 +1,9 @@
 /* Computer Graphics and Game Technology, Assignment Ray-tracing
  *
- * Student name ....
- * Student email ...
- * Collegekaart ....
- * Date ............
- * Comments ........
- *
- *
- * (always fill in these fields before submitting!!)
+ * Student name .... Maico Timmerman, Tim van Zalingen
+ * Student email ... maico.timmerman@gmail.com, timvzalingen@gmail.com
+ * Collegekaart .... 10542590, 10784012
+ * Date ............ 4 maart 2015
  */
 
 #include <math.h>
@@ -26,36 +22,36 @@
 // Always return the same color. This shader does no real computations
 // based on normal, light position, etc. As such, it merely creates
 // a "silhouette" of an object.
-
-vec3
-shade_constant(intersection_point ip)
-{
+vec3 shade_constant(intersection_point ip) {
     return v3_create(1, 0, 0);
 }
 
-vec3
-shade_matte(intersection_point ip)
-{
-    vec3 shade_vec;
-    float light = scene_ambient_light;
+// Calculates color of a reflection in the intersection point. The returned
+// light is a fraction of the original light intensity based on the dot product
+// of the normal vector of the intersection point.
+vec3 shade_matte(intersection_point ip) {
+    float ci = scene_ambient_light;
     for (int i = 0; i < scene_num_lights; ++i) {
         vec3 light_pos = scene_lights[i].position;
 
         // Calculate the vector from the point to the light source.
-        shade_vec = v3_normalize(v3_subtract(scene_lights[i].position, ip.p));
-        if (!shadow_check(v3_multiply(ip.p, 1.001), shade_vec)) {
-            light += fmax(0, scene_lights[i].intensity * v3_dotprod(ip.n, shade_vec));
+        vec3 li = v3_normalize(v3_subtract(scene_lights[i].position, ip.p));
+
+        if (!shadow_check(v3_multiply(ip.p, 1.001), li)) {
+            ci += fmax(0, scene_lights[i].intensity * v3_dotprod(ip.n, li));
         }
     }
 
-    /* if (light > 1.0) light = 1.0; */
+    // Cap the maximum light at 100%.
+    if (ci > 1.0) ci = 1.0;
 
-    return v3_create(light, light, light);
+    return v3_create(ci, ci, ci);
 }
 
-vec3
-shade_blinn_phong(intersection_point ip)
-{
+// Calculate the color of a reflection in the intersection point based on the
+// Blinn-Phong algorithm. The algorithm exists of an ambient, diffuse and
+// specular component.
+vec3 shade_blinn_phong(intersection_point ip) {
     float light_diffuse = scene_ambient_light;
     float light_specular = 0;
 
@@ -64,7 +60,6 @@ shade_blinn_phong(intersection_point ip)
 
     vec3 cd = v3_create(1.0, 0.0, 0.0);
     vec3 cs = v3_create(1.0, 1.0, 1.0);
-    vec3 shade_vec;
 
     // For all the light sources calculate the diffuse and specular components.
     for (int i = 0; i < scene_num_lights; ++i) {
@@ -89,28 +84,20 @@ shade_blinn_phong(intersection_point ip)
     light_specular += (0.5 * cur_specular);
 
     return v3_create(light_diffuse+light_specular, 0, 0);
-                     /* light_diffuse+light_specular, */
-                     /* light_diffuse+light_specular); */
-
-
-    /* float */
-    return v3_create(1, 0, 0);
 }
 
-vec3
-shade_reflection(intersection_point ip)
-{
-// 	// Reflection direction r = 2*n*(dot(i,n))-i.
-	vec3 r = v3_subtract(v3_multiply(ip.n, 2 * v3_dotprod(ip.i, ip.n)), ip.i);
-	
-	// Matte reflection makes up for 75% of the of the colour returned.
-	vec3 matte = shade_matte(ip);
-	
-	// The reflection colour is a new ray shot from the intersection point to
-	// the reflection direction r. This makes up for 25% of the colour.
-	vec3 refl = ray_color(ip.ray_level + 1, v3_multiply(ip.p, 1.001), r);
-	
-	return v3_add(v3_multiply(matte, 0.75), v3_multiply(refl, 0.25));
+// TODO proper comments
+vec3 shade_reflection(intersection_point ip) {
+    vec3 r = v3_subtract(v3_multiply(ip.n, 2 * v3_dotprod(ip.i, ip.n)), ip.i);
+
+    // Matte reflection makes up for 75% of the of the colour returned.
+    vec3 matte = shade_matte(ip);
+
+    // The reflection colour is a new ray shot from the intersection point to
+    // the reflection direction r. This makes up for 25% of the colour.
+    vec3 refl = ray_color(ip.ray_level + 1, v3_multiply(ip.p, 1.001), r);
+
+    return v3_add(v3_multiply(matte, 0.75), v3_multiply(refl, 0.25));
 }
 
 // Returns the shaded color for the given point to shade.
