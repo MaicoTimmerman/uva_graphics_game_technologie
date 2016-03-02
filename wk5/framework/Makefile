@@ -39,4 +39,4 @@ bbox.o         : bbox.h constants.h v3math.h bbox.c
 bbox.o         : types.h bbox.h
 
 run: all
-	./main ./silhouette.scn
+	./main ./simple.scn
