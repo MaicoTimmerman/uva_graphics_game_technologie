@@ -167,14 +167,15 @@ ray_intersects_sphere(intersection_point* ip, sphere sph,
 }
 
 int find_next_bvh_ip(
-        bvh_node* cnode, intersection_point* ip, float t_min, float t_max,
-        vec3 ray_origin, vec3 ray_dir) {
+        bvh_node* cnode, intersection_point* ip, vec3 ray_origin, vec3 ray_dir) {
 
-    float nt_min, nt_max;
+    float nt_min_left, nt_max_left;
+    float nt_min_right, nt_max_right;
     int intersection = 0;
+    int left_bb = 0;
+    int right_bb = 0;
 
-    if (cnode->is_leaf == 1) {
-
+    if (cnode->is_leaf) {
         // Check if the ray intersects with any of the triangles in the current
         // bounding box.
         for (int i = 0; i < cnode->u.leaf.num_triangles; i++) {
@@ -183,26 +184,49 @@ int find_next_bvh_ip(
 
             if (ray_intersects_triangle(&new_ip, cnode->u.leaf.triangles[i], ray_origin, ray_dir)) {
                 if (new_ip.t < ip->t) {
-                    ip = &new_ip;
+                    *ip = new_ip;
+                    intersection = 1;
                 }
-                intersection = 1;
             }
         }
-        if (intersection) return 1;
-        return 0;
+        return intersection;
     }
 
-    if (!bbox_intersect(&nt_min, &nt_max, cnode->bbox, ray_origin, ray_dir, t_min, t_max)) {
-        return 0;
+    left_bb = bbox_intersect(&nt_min_left, &nt_max_left,
+            cnode->u.inner.left_child->bbox, ray_origin, ray_dir, 0, C_INFINITY);
+    right_bb = bbox_intersect(&nt_min_right, &nt_max_right,
+            cnode->u.inner.right_child->bbox, ray_origin, ray_dir, 0, C_INFINITY);
+
+    if (left_bb && right_bb) {
+        // Check if the current intersection point is closer then both the
+        // bounding boxes.
+        if (nt_min_left > ip->t && nt_min_right > ip->t) return 0;
+
+        if (nt_min_left < nt_min_right) {
+            intersection = find_next_bvh_ip(cnode->u.inner.left_child, ip, ray_origin, ray_dir);
+            if (nt_min_right < ip->t)
+                intersection |= find_next_bvh_ip(cnode->u.inner.right_child, ip, ray_origin, ray_dir);
+        } else {
+            intersection = find_next_bvh_ip(cnode->u.inner.right_child, ip, ray_origin, ray_dir);
+            if (nt_min_left < ip->t)
+                intersection |= find_next_bvh_ip(cnode->u.inner.left_child, ip, ray_origin, ray_dir);
+        }
+
+        return intersection;
     }
 
-    if (find_next_bvh_ip(cnode->u.inner.left_child, ip, nt_min, nt_max, ray_origin, ray_dir)) {
-        intersection = 1;
+    if (left_bb) {
+        if (nt_min_left < ip->t) {
+            return find_next_bvh_ip(cnode->u.inner.left_child, ip, ray_origin, ray_dir);
+        }
     }
-    if (find_next_bvh_ip(cnode->u.inner.right_child, ip, nt_min, nt_max, ray_origin, ray_dir)) {
-        intersection = 1;
+
+    if (right_bb) {
+        if (nt_min_right < ip->t) {
+            return find_next_bvh_ip(cnode->u.inner.right_child, ip, ray_origin, ray_dir);
+        }
     }
-    if (intersection) return 1;
+
     return 0;
 }
 
@@ -216,8 +240,11 @@ int find_next_bvh_ip(
 // Returns 0 if there are no intersections
 static int find_first_intersected_bvh_triangle(
         intersection_point* ip, vec3 ray_origin, vec3 ray_dir) {
-    // Root from : bvh_root
-    find_next_bvh_ip(bvh_root, ip, 0, 100000, ray_origin, ray_dir);
+
+
+    ip->t = C_INFINITY;
+    return find_next_bvh_ip(bvh_root, ip, ray_origin, ray_dir);
+
 }
 
 // Returns the nearest hit of the given ray with objects in the scene
