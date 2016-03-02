@@ -186,6 +186,9 @@ ray_trace(void)
 
     float step_size_x = image_plane_width / framebuffer_width;
     float step_size_y = image_plane_height / framebuffer_height;
+    
+    float aa_step_size_x = step_size_x / 4;
+    float aa_step_size_y = step_size_y / 4;
 
     float start_x = step_size_x * 0.5;
     float start_y = step_size_y * 0.5;
@@ -207,8 +210,25 @@ ray_trace(void)
             nvector = v3_add(
                     v3_add(v3_multiply(right_vector, u), v3_multiply(up_vector, v)),
                     forward_vector);
-
-            color = ray_color(0, scene_camera_position, nvector);
+            
+            if (!do_antialiasing) {
+                color = ray_color(0, scene_camera_position, nvector);
+            }
+            else {
+                float offsets[8] = {aa_step_size_x, aa_step_size_y,
+                    -1 * aa_step_size_x, aa_step_size_y,
+                    aa_step_size_x, -1 * aa_step_size_y,
+                    -1 * aa_step_size_x, -1 * aa_step_size_y};
+                vec3 offset;
+                vec3 new_nvector;
+                vec3 total_color = v3_create(0., 0., 0.);
+                for (int k = 0; k < 8; k += 2) {
+                    offset = v3_add(v3_multiply(right_vector, offsets[k]), v3_multiply(up_vector, offsets[k+1]));
+                    new_nvector = v3_add(nvector, offset);
+                    total_color = v3_add(total_color, ray_color(0, scene_camera_position, new_nvector));
+                }
+                color = v3_multiply(total_color, 0.25);
+            }
 
             put_pixel(i, j, color.x, color.y, color.z);
         }
