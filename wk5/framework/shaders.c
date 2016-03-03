@@ -32,8 +32,6 @@ vec3 shade_constant(intersection_point ip) {
 vec3 shade_matte(intersection_point ip) {
     float ci = scene_ambient_light;
     for (int i = 0; i < scene_num_lights; ++i) {
-        vec3 light_pos = scene_lights[i].position;
-
         // Calculate the vector from the point to the light source.
         vec3 li = v3_normalize(v3_subtract(scene_lights[i].position, ip.p));
 
@@ -83,7 +81,8 @@ vec3 shade_blinn_phong(intersection_point ip) {
     light_diffuse += (0.8 * cur_diffuse);
     light_specular += (0.5 * cur_specular);
 
-    return v3_create(light_diffuse+light_specular, 0, 0);
+    return v3_add(v3_multiply(cd, light_diffuse),
+            v3_multiply(cs, light_specular));
 }
 
 // TODO proper comments
