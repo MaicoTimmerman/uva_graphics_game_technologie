@@ -86,11 +86,13 @@ vec3 shade_blinn_phong(intersection_point ip) {
     return v3_create(light_diffuse+light_specular, 0, 0);
 }
 
-// TODO proper comments
+// This function does the reflection in a given intersection point. A new ray is
+// shot from the intersection point into the direction the reflection goes. The
+// reflection will be 25% of the color shown.
 vec3 shade_reflection(intersection_point ip) {
     vec3 r = v3_subtract(v3_multiply(ip.n, 2 * v3_dotprod(ip.i, ip.n)), ip.i);
 
-    // Matte reflection makes up for 75% of the of the colour returned.
+    // Matte shading makes up for 75% of the of the colour returned.
     vec3 matte = shade_matte(ip);
 
     // The reflection colour is a new ray shot from the intersection point to
