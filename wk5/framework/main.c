@@ -183,8 +183,6 @@ ray_trace(void)
     float step_size_x = image_plane_width / framebuffer_width;
     float step_size_y = image_plane_height / framebuffer_height;
 
-    float aa_step_size_x = step_size_x / 4;
-    float aa_step_size_y = step_size_y / 4;
 
     float start_x = step_size_x * 0.5;
     float start_y = step_size_y * 0.5;
@@ -196,7 +194,15 @@ ray_trace(void)
     vec3 offset;
     vec3 new_nvector;
     vec3 total_color = v3_create(0., 0., 0.);
-
+    
+    // Variables to get the offset for anti-alisasing
+    float aa_step_size_x = step_size_x / 4;
+    float aa_step_size_y = step_size_y / 4;
+    float offsets[8] = {aa_step_size_x, aa_step_size_y,
+                -1 * aa_step_size_x, aa_step_size_y,
+                aa_step_size_x, -1 * aa_step_size_y,
+                -1 * aa_step_size_x, -1 * aa_step_size_y};
+    
     // Loop over all pixels in the framebuffer
     for (j = 0; j < framebuffer_height; j++) {
         for (i = 0; i < framebuffer_width; i++) {
@@ -217,11 +223,6 @@ ray_trace(void)
                 color = ray_color(0, scene_camera_position, nvector);
             }
             else {
-                float offsets[8] = {aa_step_size_x, aa_step_size_y,
-                    -1 * aa_step_size_x, aa_step_size_y,
-                    aa_step_size_x, -1 * aa_step_size_y,
-                    -1 * aa_step_size_x, -1 * aa_step_size_y};
-
                 // For all four vectors, calculate the offset vector, based of
                 // the up_vector and forward_vector.
                 for (int k = 0; k < 8; k += 2) {
