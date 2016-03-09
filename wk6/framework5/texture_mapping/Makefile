@@ -15,6 +15,9 @@ clean:
 	rm -f *.o
 	rm -f main
 
+run: all
+	./main
+
 geometry.o : geometry.h polys.h geometry.c
 ppmio.o    : ppmio.c
 geometry.o : polys.h geometry.h

@@ -257,8 +257,8 @@ InitGL(void)
             glBindTexture(GL_TEXTURE_2D, texture_names[i]);
             glCheckError("glBindTexture");
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glCheckError("glTexParameteri");
@@ -308,13 +308,16 @@ DrawPolylist(polys * list)
 
         // Make the correct texture active
         glBindTexture(GL_TEXTURE_2D, p.texture_id);
-
         glBegin(GL_POLYGON);
         for (j = 0; j < p.points; j++)
         {
             glNormal3f(p.normal[j].x, p.normal[j].y, p.normal[j].z);
+            // Assuming not more than 4 points. glTexCoord2f() gets the values
+            // 
+            glTexCoord2f(p.tcoord[j].x, p.tcoord[j].y);
             glVertex3f(p.pts[j].x, p.pts[j].y, p.pts[j].z);
         }
+//         printf("\n");
         glEnd();
     }
 }
@@ -429,7 +432,7 @@ DrawGLScene(void)
 
     glPushAttrib(GL_LIGHTING_BIT);
     glDisable(GL_LIGHTING);
-    //DrawPolylist(polylistSkydome);
+    DrawPolylist(polylistSkydome);
     glPopAttrib();
 
     glutSwapBuffers();
