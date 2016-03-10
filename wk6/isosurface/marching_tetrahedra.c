@@ -55,7 +55,8 @@ static triangle generate_corner_triangle(unsigned char isovalue, cell c,
     t.p[1] = interpolate_points(isovalue, c.p[v0], c.p[v2], c.value[v0], c.value[v2]);
     t.p[2] = interpolate_points(isovalue, c.p[v0], c.p[v3], c.value[v0], c.value[v3]);
 
-    // TODO calc normal vectors
+    vec3 normal = v3_crossprod(v3_subtract(t.p[0], t.p[2]), v3_subtract(t.p[1], t.p[2]));
+    t.n[0] = normal; t.n[1] = normal; t.n[2] = normal;
     return t;
 }
 
@@ -66,7 +67,8 @@ static triangle generate_squared_triangle(unsigned char isovalue, cell c,
     t.p[1] = interpolate_points(isovalue, c.p[v1], c.p[v2], c.value[v1], c.value[v2]);
     t.p[2] = interpolate_points(isovalue, c.p[v2], c.p[v3], c.value[v2], c.value[v3]);
 
-    // TODO calc normal vectors
+    vec3 normal = v3_crossprod(v3_subtract(t.p[0], t.p[2]), v3_subtract(t.p[1], t.p[2]));
+    t.n[0] = normal; t.n[1] = normal; t.n[2] = normal;
     return t;
 }
 
