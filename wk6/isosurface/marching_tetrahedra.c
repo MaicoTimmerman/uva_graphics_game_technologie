@@ -33,17 +33,15 @@ interpolate_points(unsigned char isovalue, vec3 p1, vec3 p2, unsigned char v1, u
     /* Initially, simply return the midpoint between p1 and p2.
        So no real interpolation is done yet */
 
-    return v3_add(v3_multiply(p1, 0.5), v3_multiply(p2, 0.5));
+    /* return v3_add(v3_multiply(p1, 0.5), v3_multiply(p2, 0.5)); */
 
     float fv1 = (float) v1;
     float fv2 = (float) v2;
     float iso = (float) isovalue;
 
-    float length = abs(fv1 - fv2);
-    float ratio_p1 = (abs(fv1 - iso) / length);
-    float ratio_p2 = (abs(fv2 - iso) / length);
+    float ratio = (iso - fv2) / (fv1 - fv2);
 
-    return v3_add(v3_multiply(p1, ratio_p1), v3_multiply(p2, ratio_p2));
+    return v3_add(v3_multiply(p1, ratio), v3_multiply(p2, 1-ratio));
 }
 
 
@@ -88,23 +86,11 @@ generate_tetrahedron_triangles(triangle *triangles, unsigned char isovalue,
 {
     unsigned char bitmask = 0x0;
 
-
-
     if (isovalue < c.value[v0]) bitmask |= 0x1;
     if (isovalue < c.value[v1]) bitmask |= 0x2;
     if (isovalue < c.value[v2]) bitmask |= 0x4;
     if (isovalue < c.value[v3]) bitmask |= 0x8;
 
-    // The first 8 cases (0x0 -> 0x7) are interchangeable with the last cases
-    /* printf("c.value[v0]: %lf\n", c.value[v0]); */
-    /* printf("c.value[v1]: %lf\n", c.value[v1]); */
-    /* printf("c.value[v2]: %lf\n", c.value[v2]); */
-    /* printf("c.value[v3]: %lf\n", c.value[v3]); */
-    /* printf("isovalue: %d\n", isovalue); */
-    /* printf("bitmask before: %d\n", bitmask); */
-    /* if (bitmask > 0x7) bitmask = ~bitmask; */
-    /* printf("bitmask after: %d\n", bitmask); */
-    fflush(stdout);
 
     if (bitmask == 0x0 || bitmask == 0xF) { // 0000 and 1111
         return 0;
@@ -157,10 +143,6 @@ int
 generate_cell_triangles(triangle *triangles, cell c, unsigned char isovalue) {
 
     int num_triangles = 0;
-
-    for (int i = 0; i < 8; ++i) {
-        /* printf("\tvolume: %lf\n", c.value[i]); */
-    }
 
     // For all the tetrahedra, call the triangle function for all the corners.
     for (int i = 0; i < 6; i++) {

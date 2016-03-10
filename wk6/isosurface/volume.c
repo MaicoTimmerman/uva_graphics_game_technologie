@@ -52,7 +52,6 @@ get_cell(int i, int j, int k)
 
     // cell.p contains the 8 cornerpoints of the cell, in specific order
     vec3 root = v3_create(i, j, k);
-    printf("i: %d,j: %d,k: %d\n", i,j,k);
     int voxel;
     unsigned char volume_entry;
 
