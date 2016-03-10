@@ -5,7 +5,7 @@
 
 typedef struct
 {
-    float   x, y, z;
+    float x, y, z;
 }
 vec3;
 

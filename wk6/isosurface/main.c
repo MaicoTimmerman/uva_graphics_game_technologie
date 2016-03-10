@@ -232,9 +232,11 @@ void FillArrayWithIsosurface(void) {
     for (int i = 0; i < nx; i++) {
         for (int j = 0; j < ny; j++) {
             for (int k = 0; k < nz; k++) {
-                printf("i: %d, j: %d, k: %d\n", i, j,k);
 
                 c = get_cell(i, j, k);
+                for (int i = 0; i < 8; ++i) {
+                    /* printf("\tvolume2: %lf\n", c.value[i]); */
+                }
 
                 num_triangles = generate_cell_triangles(t, c, isovalue);
 
@@ -242,6 +244,7 @@ void FillArrayWithIsosurface(void) {
                     cur_triangle = t[l];
 
                     for (int m = 0; m < 3; m++) {
+                        cur_triangle.p[m].x *= sizex;
                         AddVertexToArray(cur_triangle.p[m], cur_triangle.n[m]);
                     }
                 }

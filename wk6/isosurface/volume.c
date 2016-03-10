@@ -52,13 +52,19 @@ get_cell(int i, int j, int k)
 
     // cell.p contains the 8 cornerpoints of the cell, in specific order
     vec3 root = v3_create(i, j, k);
+    printf("i: %d,j: %d,k: %d\n", i,j,k);
+    int voxel;
+    unsigned char volume_entry;
 
     for (int l = 0; l < 8; l++) {
         c.p[l] = v3_add(root, cell_corners[l]);
+        /* printf("\ti: %lf,j: %lf,k: %lf\n", c.p[l].x, c.p[l].y, c.p[l].z); */
         if (i+1 >= nx || j+1 >= ny || k+1 >= nz) {
             c.value[l] = 0;
         } else {
-            c.value[l] = volume[voxel2idx(c.p[l].x, c.p[l].y, c.p[l].z)];
+            voxel = voxel2idx(c.p[l].x, c.p[l].y, c.p[l].z);
+            volume_entry = volume[voxel];
+            c.value[l] = volume_entry;
         }
     }
     return c;
