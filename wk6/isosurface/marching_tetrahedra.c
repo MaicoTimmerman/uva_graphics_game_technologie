@@ -34,11 +34,16 @@ interpolate_points(unsigned char isovalue, vec3 p1, vec3 p2, unsigned char v1, u
        So no real interpolation is done yet */
 
     return v3_add(v3_multiply(p1, 0.5), v3_multiply(p2, 0.5));
+    
+    float fv1 = (float) v1;
+    float fv2 = (float) v2;
+    float iso = (float) isovalue;
+    
+    float length = abs(fv1 - fv2);
+    float ratio_p1 = (abs(fv1 - iso) / length);
+    float ratio_p2 = (abs(fv2 - iso) / length);
 
-    float fv1 = (float)v1, fv2 = (float)v2;
-    float dv = isovalue * (fv1 / fv2);
-
-    return v3_multiply(v3_subtract(p1, p2), dv);
+    return v3_add(v3_multiply(p1, ratio_p1), v3_multiply(p2, ratio_p2));
 }
 
 
