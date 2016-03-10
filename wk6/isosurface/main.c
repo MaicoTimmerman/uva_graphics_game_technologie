@@ -241,6 +241,8 @@ void FillArrayWithIsosurface(void) {
 
                     for (int m = 0; m < 3; m++) {
                         cur_triangle.p[m].x *= sizex;
+                        cur_triangle.p[m].y *= sizey;
+                        cur_triangle.p[m].z *= sizez;
                         AddVertexToArray(cur_triangle.p[m], cur_triangle.n[m]);
                     }
                 }

@@ -50,20 +50,17 @@ get_cell(int i, int j, int k)
         v3_create(1, 1, 1)
     };
 
-    // cell.p contains the 8 cornerpoints of the cell, in specific order
+    // cell.p contains the 8 cornerpoints of the cell, in specific order.
     vec3 root = v3_create(i, j, k);
-    int voxel;
-    unsigned char volume_entry;
 
+    // Calculate the offset vectors to calculate the value of the corners of
+    // the cell.
     for (int l = 0; l < 8; l++) {
         c.p[l] = v3_add(root, cell_corners[l]);
-        /* printf("\ti: %lf,j: %lf,k: %lf\n", c.p[l].x, c.p[l].y, c.p[l].z); */
         if (i+1 >= nx || j+1 >= ny || k+1 >= nz) {
             c.value[l] = 0;
         } else {
-            voxel = voxel2idx(c.p[l].x, c.p[l].y, c.p[l].z);
-            volume_entry = volume[voxel];
-            c.value[l] = volume_entry;
+            c.value[l] = volume[voxel2idx(c.p[l].x, c.p[l].y, c.p[l].z)];
         }
     }
     return c;

@@ -14,6 +14,7 @@
 #include <assert.h>
 #include "marching_tetrahedra.h"
 
+/* Combination of the vertices of the tetrahedra. */
 tetrahedron T[6] = {
     {.p[0] = 0, .p[1] = 1, .p[2] = 3, .p[3] = 7}, // T1
     {.p[0] = 0, .p[1] = 2, .p[2] = 6, .p[3] = 7}, // T2
@@ -26,26 +27,21 @@ tetrahedron T[6] = {
 /* Compute a linearly interpolated position where an isosurface cuts
    an edge between two vertices (p1 and p2), each with their own
    scalar value (v1 and v2) */
-
     static vec3
 interpolate_points(unsigned char isovalue, vec3 p1, vec3 p2, unsigned char v1, unsigned char v2)
 {
-    /* Initially, simply return the midpoint between p1 and p2.
-       So no real interpolation is done yet */
-
-    /* return v3_add(v3_multiply(p1, 0.5), v3_multiply(p2, 0.5)); */
-
     float fv1 = (float) v1;
     float fv2 = (float) v2;
     float iso = (float) isovalue;
 
+    /* Calculate linear where the exact location of the value of iso is. */
     float ratio = (iso - fv2) / (fv1 - fv2);
 
     return v3_add(v3_multiply(p1, ratio), v3_multiply(p2, 1-ratio));
 }
 
 
-/* Generate the triangle located in the corner of v0 */
+/* Calculate the triangle located in the corner of v0 */
 static triangle generate_corner_triangle(unsigned char isovalue, cell c,
         int v0, int v1, int v2, int v3) {
     triangle t;
@@ -53,11 +49,16 @@ static triangle generate_corner_triangle(unsigned char isovalue, cell c,
     t.p[1] = interpolate_points(isovalue, c.p[v0], c.p[v2], c.value[v0], c.value[v2]);
     t.p[2] = interpolate_points(isovalue, c.p[v0], c.p[v3], c.value[v0], c.value[v3]);
 
-    vec3 normal = v3_crossprod(v3_subtract(t.p[0], t.p[2]), v3_subtract(t.p[1], t.p[2]));
+    /* Calculate a normalized normal vector */
+    vec3 normal = v3_normalize(v3_crossprod(
+                v3_subtract(t.p[0], t.p[2]),
+                v3_subtract(t.p[1], t.p[2])));
     t.n[0] = normal; t.n[1] = normal; t.n[2] = normal;
     return t;
 }
 
+/* Calculate one of the triangles in a tetrahedron where a squared intersection
+ * is found. */
 static triangle generate_squared_triangle(unsigned char isovalue, cell c,
         int v0, int v1, int v2, int v3) {
     triangle t;
@@ -65,7 +66,10 @@ static triangle generate_squared_triangle(unsigned char isovalue, cell c,
     t.p[1] = interpolate_points(isovalue, c.p[v1], c.p[v2], c.value[v1], c.value[v2]);
     t.p[2] = interpolate_points(isovalue, c.p[v2], c.p[v3], c.value[v2], c.value[v3]);
 
-    vec3 normal = v3_crossprod(v3_subtract(t.p[0], t.p[2]), v3_subtract(t.p[1], t.p[2]));
+    /* Calculate a normalized normal vector */
+    vec3 normal = v3_normalize(v3_crossprod(
+                v3_subtract(t.p[0], t.p[2]),
+                v3_subtract(t.p[1], t.p[2])));
     t.n[0] = normal; t.n[1] = normal; t.n[2] = normal;
     return t;
 }
@@ -92,6 +96,8 @@ generate_tetrahedron_triangles(triangle *triangles, unsigned char isovalue,
     if (isovalue < c.value[v3]) bitmask |= 0x8;
 
 
+    // For all the different permutations of tetrahedra vertices, calculate
+    // the triangles.
     if (bitmask == 0x0 || bitmask == 0xF) { // 0000 and 1111
         return 0;
     }
@@ -138,13 +144,14 @@ generate_tetrahedron_triangles(triangle *triangles, unsigned char isovalue,
 
    Return the number of triangles produced
    */
-
 int
 generate_cell_triangles(triangle *triangles, cell c, unsigned char isovalue) {
 
     int num_triangles = 0;
 
     // For all the tetrahedra, call the triangle function for all the corners.
+    // For all different tetrahedra, shift the triangles array to the first
+    // free position.
     for (int i = 0; i < 6; i++) {
         num_triangles += generate_tetrahedron_triangles(triangles+num_triangles,
                 isovalue, c, T[i].p[0], T[i].p[1],T[i].p[2],T[i].p[3]);
