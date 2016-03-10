@@ -199,8 +199,7 @@ createCylinder(polys * list, double radius, double height,
 
             // Set texture coordinate
             p.tcoord[i].x = longitude / 360.0;
-            p.tcoord[i].y = height / oy;
-            printf("%f\n", height);
+            p.tcoord[i].y = (p.pts[i].y - oy) / height;
         }
 
         AddPolyToPolylist(list, p);

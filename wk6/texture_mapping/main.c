@@ -57,6 +57,7 @@ GLuint *texture_names;
 polys *polylistHouse = NULL;
 polys *polylistTreeStem = NULL;
 polys *polylistTreeLeafs = NULL;
+polys *polylistLeaf = NULL;
 polys *polylistGround1 = NULL;
 polys *polylistGround2 = NULL;
 polys *polylistRoad = NULL;
@@ -132,16 +133,22 @@ InitializePolygonlists(void)
         object_positions[0].x, object_positions[0].y, object_positions[0].z);
 
     // A single tree object
-    polylistTreeLeafs = CreatePolylist(10);
-    createSphere(polylistTreeLeafs, 0.7, 0.7, 0.7,  0, 1.7, 0,  0, 1, 0);
-    for (i = 0; i < polylistTreeLeafs->length; i++)
-        polylistTreeLeafs->items[i].texture_id = texture_names[0];
+//     polylistTreeLeafs = CreatePolylist(10);
+//     createSphere(polylistTreeLeafs, 0.7, 0.7, 0.7,  0, 1.7, 0,  0, 1, 0);
+//     for (i = 0; i < polylistTreeLeafs->length; i++)
+//         polylistTreeLeafs->items[i].texture_id = texture_names[0];
 
     polylistTreeStem = CreatePolylist(10);
     createCylinder(polylistTreeStem, 0.075, 1.8,  0, 0, 0,  0.5, 0.3, 0);
     for (i = 0; i < polylistTreeStem->length; i++)
         polylistTreeStem->items[i].texture_id = texture_names[3];
 
+    polylistTreeLeafs = CreatePolylist(10);
+    loadPolygonalObject(polylistTreeLeafs, "leaf.obj", texture_names, 1.0,
+        0.0, 1.8, 0.0);
+//     for (i = 0; i < polylistTreeLeafs->length; i++)
+//         polylistTreeLeafs->items[i].texture_id = texture_names[6];
+    
     // Done!
     printf("%d polygons\n",
            polylistHouse->length + polylistTreeLeafs->length +
@@ -423,8 +430,11 @@ DrawGLScene(void)
         glScalef(1, 1 + (rand_float()-0.5)*0.6, 1);
 
         DrawPolylist(polylistTreeStem);
-        DrawPolylist(polylistTreeLeafs);
-
+        for (int i = 0; i < 8; i ++)
+        {
+            glRotatef(i*45.0, 0, 1, 0);
+            DrawPolylist(polylistTreeLeafs);
+        }
         glPopMatrix();
     }
 
