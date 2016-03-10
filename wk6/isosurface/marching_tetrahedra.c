@@ -34,6 +34,31 @@ interpolate_points(unsigned char isovalue, vec3 p1, vec3 p2, unsigned char v1, u
        So no real interpolation is done yet */
 
     return v3_add(v3_multiply(p1, 0.5), v3_multiply(p2, 0.5));
+
+    float fv1 = (float)v1, fv2 = (float)v2;
+    float dv = isovalue * (fv1 / fv2);
+
+    return v3_multiply(v3_subtract(p1, p2), dv);
+}
+
+
+/* Generate the triangle located in the corner of v0 */
+static triangle generate_corner_triangle(unsigned char isovalue, cell c,
+        int v0, int v1, int v2, int v3) {
+    triangle t;
+    t.p[0] = interpolate_points(isovalue, c.p[v0], c.p[v1], c.value[v0], c.value[v1]);
+    t.p[1] = interpolate_points(isovalue, c.p[v0], c.p[v2], c.value[v0], c.value[v2]);
+    t.p[2] = interpolate_points(isovalue, c.p[v0], c.p[v3], c.value[v0], c.value[v3]);
+    return t;
+}
+
+static triangle generate_squared_triangle(unsigned char isovalue, cell c,
+    int v0, int v1, int v2, int v3) {
+    triangle t;
+    t.p[0] = interpolate_points(isovalue, c.p[v0], c.p[v1], c.value[v0], c.value[v1]);
+    t.p[1] = interpolate_points(isovalue, c.p[v1], c.p[v2], c.value[v1], c.value[v2]);
+    t.p[2] = interpolate_points(isovalue, c.p[v2], c.p[v3], c.value[v2], c.value[v3]);
+    return t;
 }
 
 /* Using the given iso-value generate triangles for the tetrahedron
@@ -46,12 +71,10 @@ interpolate_points(unsigned char isovalue, vec3 p1, vec3 p2, unsigned char v1, u
    Note: the output array "triangles" should have space for at least
          2 triangles.
 */
-
 static int
 generate_tetrahedron_triangles(triangle *triangles, unsigned char isovalue,
         cell c, int v0, int v1, int v2, int v3)
 {
-
     unsigned char bitmask = 0x0;
 
     if (isovalue < c.value[v0]) bitmask |= 0x1;
@@ -59,24 +82,37 @@ generate_tetrahedron_triangles(triangle *triangles, unsigned char isovalue,
     if (isovalue < c.value[v2]) bitmask |= 0x3;
     if (isovalue < c.value[v3]) bitmask |= 0x4;
 
-    /* switch (bitmask) { */
-    /*     case (0x0) */
-    /*     case (0x1) */
-    /*     case (0x2) */
-    /*     case (0x3) */
-    /*     case (0x4) */
-    /*     case (0x5) */
-    /*     case (0x6) */
-    /*     case (0x7) */
-    /*     case (0x8) */
-    /*     case (0x9) */
-    /*     case (0xA) */
-    /*     case (0xB) */
-    /*     case (0xC) */
-    /*     case (0xD) */
-    /*     case (0xE) */
-    /*     case (0xF) */
-    /* } */
+    // The first 8 cases (0x0 -> 0x7) are interchangeable with the last cases
+    if (bitmask > 0x7) bitmask = ~bitmask;
+
+    switch (bitmask) {
+        case (0x0): // 0000 and 1111
+            return 0;
+        case (0x1): // 0001 and 1110
+            *triangles = generate_corner_triangle(isovalue, c, v0, v1, v2, v3);
+            return 1;
+        case (0x2): // 0010 and 1101
+            *triangles = generate_corner_triangle(isovalue, c, v1, v0, v2, v3);
+            return 1;
+        case (0x3): // 0011 and 1100
+            *triangles = generate_corner_triangle(isovalue, c, v2, v0, v3, v1);
+            *(triangles+1) = generate_corner_triangle(isovalue, c, v3, v1, v2, v0);
+            return 2;
+        case (0x4): // 0100 and 1011
+            *triangles = generate_corner_triangle(isovalue, c, v2, v0, v1, v3);
+            return 1;
+        case (0x5): // 0101 and 1010
+            *triangles = generate_corner_triangle(isovalue, c, v2, v3, v0, v1);
+            *(triangles+1) = generate_corner_triangle(isovalue, c, v3, v2, v1, v0);
+            return 2;
+        case (0x6): // 0110 and 1001
+            *triangles = generate_corner_triangle(isovalue, c, v3, v1, v0, v2);
+            *(triangles+1) = generate_corner_triangle(isovalue, c, v1, v3, v2, v0);
+            return 2;
+        case (0x7): // 0111 and 0111
+            *triangles = generate_corner_triangle(isovalue, c, v3, v0, v1, v2);
+            return 1;
+    }
 
     return 0;
 }

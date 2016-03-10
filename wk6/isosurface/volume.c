@@ -52,15 +52,14 @@ get_cell(int i, int j, int k)
 
     // cell.p contains the 8 cornerpoints of the cell, in specific order
     vec3 root = v3_create(i, j, k);
-    vec3 offset, voxel;
-    int voxel_id;
 
     for (int l = 0; l < 8; l++) {
-        offset = cell_corners[l];
-        voxel = v3_add(root, offset);
-        voxel_id = voxel2idx(voxel.x, voxel.y, voxel.z);
-        c.p[l] = voxel;
-        c.value[l] = volume[voxel_id];
+        c.p[l] = v3_add(root, cell_corners[l]);
+        if (i+1 >= nx || j+1 >= ny || k+1 >= nz) {
+            c.value[l] = 0;
+        } else {
+            c.value[l] = volume[voxel2idx(c.p[l].x, c.p[l].y, c.p[l].z)];
+        }
     }
     return c;
 }
