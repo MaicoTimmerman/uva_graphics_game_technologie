@@ -23,4 +23,4 @@ marching_tetrahedra.o : v3math.h volume.h marching_tetrahedra.h
 main.o                : marching_tetrahedra.h v3math.h volume.h main.c
 
 run: all
-	./main ./datasets/frog.small.vtk 0
+	./main ./datasets/sphere5.vtk 0

@@ -49,6 +49,8 @@ static triangle generate_corner_triangle(unsigned char isovalue, cell c,
     t.p[0] = interpolate_points(isovalue, c.p[v0], c.p[v1], c.value[v0], c.value[v1]);
     t.p[1] = interpolate_points(isovalue, c.p[v0], c.p[v2], c.value[v0], c.value[v2]);
     t.p[2] = interpolate_points(isovalue, c.p[v0], c.p[v3], c.value[v0], c.value[v3]);
+
+    // TODO calc normal vectors
     return t;
 }
 
@@ -58,6 +60,8 @@ static triangle generate_squared_triangle(unsigned char isovalue, cell c,
     t.p[0] = interpolate_points(isovalue, c.p[v0], c.p[v1], c.value[v0], c.value[v1]);
     t.p[1] = interpolate_points(isovalue, c.p[v1], c.p[v2], c.value[v1], c.value[v2]);
     t.p[2] = interpolate_points(isovalue, c.p[v2], c.p[v3], c.value[v2], c.value[v3]);
+
+    // TODO calc normal vectors
     return t;
 }
 
@@ -77,6 +81,7 @@ generate_tetrahedron_triangles(triangle *triangles, unsigned char isovalue,
 {
     unsigned char bitmask = 0x0;
 
+
     if (isovalue < c.value[v0]) bitmask |= 0x1;
     if (isovalue < c.value[v1]) bitmask |= 0x2;
     if (isovalue < c.value[v2]) bitmask |= 0x3;
@@ -84,6 +89,7 @@ generate_tetrahedron_triangles(triangle *triangles, unsigned char isovalue,
 
     // The first 8 cases (0x0 -> 0x7) are interchangeable with the last cases
     if (bitmask > 0x7) bitmask = ~bitmask;
+    fflush(stdout);
 
     switch (bitmask) {
         case (0x0): // 0000 and 1111
@@ -133,9 +139,9 @@ generate_cell_triangles(triangle *triangles, cell c, unsigned char isovalue) {
 
     // For all the tetrahedra, call the triangle function for all the corners.
     for (int i = 0; i < 6; i++) {
-        generate_tetrahedron_triangles(triangles+num_triangles, isovalue, c,
-                T[i].p[0], T[i].p[1],T[i].p[2],T[i].p[3]);
+        num_triangles += generate_tetrahedron_triangles(triangles+num_triangles,
+                isovalue, c, T[i].p[0], T[i].p[1],T[i].p[2],T[i].p[3]);
     }
 
-    return 0;
+    return num_triangles;
 }
