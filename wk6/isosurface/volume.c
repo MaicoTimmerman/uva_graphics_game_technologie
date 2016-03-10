@@ -31,6 +31,7 @@ voxel2idx(int i, int j, int k)
     return (k*ny + j)*nx + i;
 }
 
+
 /* Extract a cell from the volume, so that datapoint 0 of the
    cell corresponds to voxel (i, j, k), datapoint 1 to voxel (i+1, j, k),
    etc. See the assignment. */
@@ -38,6 +39,29 @@ cell
 get_cell(int i, int j, int k)
 {
     cell c;
+    vec3 cell_corners[8] = {
+        v3_create(0, 0, 0),
+        v3_create(1, 0, 0),
+        v3_create(0, 1, 0),
+        v3_create(1, 1, 0),
+        v3_create(0, 0, 1),
+        v3_create(1, 0, 1),
+        v3_create(0, 1, 1),
+        v3_create(1, 1, 1)
+    };
+
+    // cell.p contains the 8 cornerpoints of the cell, in specific order
+    vec3 root = v3_create(i, j, k);
+    vec3 offset, voxel;
+    int voxel_id;
+
+    for (int l = 0; l < 8; l++) {
+        offset = cell_corners[l];
+        voxel = v3_add(root, offset);
+        voxel_id = voxel2idx(voxel.x, voxel.y, voxel.z);
+        c.p[l] = voxel;
+        c.value[l] = volume[voxel_id];
+    }
     return c;
 }
 

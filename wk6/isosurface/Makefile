@@ -21,3 +21,6 @@ v3math.o              : v3math.h
 marching_tetrahedra.o : marching_tetrahedra.h marching_tetrahedra.c
 marching_tetrahedra.o : v3math.h volume.h marching_tetrahedra.h
 main.o                : marching_tetrahedra.h v3math.h volume.h main.c
+
+run: all
+	./main ./datasets/frog.small.vtk 0
