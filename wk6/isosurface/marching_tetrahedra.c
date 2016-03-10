@@ -116,8 +116,8 @@ generate_tetrahedron_triangles(triangle *triangles, unsigned char isovalue,
         return 1;
     }
     if (bitmask == 0x3 || bitmask == 0xC) { // 0011 and 1100
-        *triangles = generate_corner_triangle(isovalue, c, v2, v0, v3, v1);
-        *(triangles+1) = generate_corner_triangle(isovalue, c, v3, v1, v2, v0);
+        *triangles = generate_squared_triangle(isovalue, c, v2, v0, v3, v1);
+        *(triangles+1) = generate_squared_triangle(isovalue, c, v3, v1, v2, v0);
         return 2;
     }
     if (bitmask == 0x4 || bitmask == 0xB) { // 0100 and 1011
@@ -125,13 +125,13 @@ generate_tetrahedron_triangles(triangle *triangles, unsigned char isovalue,
         return 1;
     }
     if (bitmask == 0x5 || bitmask == 0xA) { // 0101 and 1010
-        *triangles = generate_corner_triangle(isovalue, c, v2, v3, v0, v1);
-        *(triangles+1) = generate_corner_triangle(isovalue, c, v3, v2, v1, v0);
+        *triangles = generate_squared_triangle(isovalue, c, v2, v3, v0, v1);
+        *(triangles+1) = generate_squared_triangle(isovalue, c, v3, v2, v1, v0);
         return 2;
     }
     if (bitmask == 0x6 || bitmask == 0x9) { // 0110 and 1001
-        *triangles = generate_corner_triangle(isovalue, c, v3, v1, v0, v2);
-        *(triangles+1) = generate_corner_triangle(isovalue, c, v1, v3, v2, v0);
+        *triangles = generate_squared_triangle(isovalue, c, v3, v1, v0, v2);
+        *(triangles+1) = generate_squared_triangle(isovalue, c, v1, v3, v2, v0);
         return 2;
     }
     if (bitmask == 0x7 || bitmask == 0x8) { // 0111 and 0111
