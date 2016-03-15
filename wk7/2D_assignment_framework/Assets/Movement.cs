@@ -8,7 +8,7 @@ public class Movement : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		xSpeed = Input.GetAxis("HorizontalA");
+		xSpeed = Input.GetAxis("Horizontal");
 		ySpeed = Input.GetAxis("Vertical");
 	}
 	
@@ -18,23 +18,17 @@ public class Movement : MonoBehaviour {
 	}
 	
 	void FixedUpdate() {
-		// float speed = 0f;
-		if (Input.GetButtonDown ("HorizontalA")) {
-			xSpeed -= 5f;
-		}
-		if (Input.GetButtonDown ("HorizontalD")) {
-			xSpeed += 5f;
-		}
-		if (Input.GetButtonUp ("HorizontalD") || Input.GetButtonUp ("HorizontalA")) {
-			xSpeed = 0f;
-		}
-		// xSpeed = speed;
-		if (xSpeed > 5f) {
-			xSpeed = 5f;
-		} else if (xSpeed < -5f) {
+		if (Input.GetAxisRaw ("Horizontal") == -1) {
 			xSpeed = -5f;
+		} else if (Input.GetAxisRaw ("Horizontal") == 0) {
+			xSpeed = 0f;
+		} else if (Input.GetAxisRaw ("Horizontal") == 1) {
+			xSpeed = 5f;
 		}
-			
-		GetComponent<Rigidbody2D> ().velocity = new Vector2 (xSpeed, 0f * ySpeed);
+
+		if (Input.GetAxisRaw ("Jump") == 1) {
+			ySpeed = 3f;
+		}
+		GetComponent<Rigidbody2D> ().velocity = new Vector2 (xSpeed, ySpeed);
 	}
 }
