@@ -18,20 +18,20 @@ public class Movement : MonoBehaviour {
 	}
 	
 	void FixedUpdate() {
-		float speed = 0f;
+		// float speed = 0f;
 		if (Input.GetButtonDown ("HorizontalA")) {
-			speed -= -5f;
+			xSpeed -= 5f;
 		}
 		if (Input.GetButtonDown ("HorizontalD")) {
-			speed += 5f;
+			xSpeed += 5f;
 		}
-		if (Input.GetButtonUp ("HorizontalD") && Input.GetButtonUp ("HorizontalA")) {
-			speed = 0f;
+		if (Input.GetButtonUp ("HorizontalD") || Input.GetButtonUp ("HorizontalA")) {
+			xSpeed = 0f;
 		}
-		xSpeed += speed;
+		// xSpeed = speed;
 		if (xSpeed > 5f) {
 			xSpeed = 5f;
-		} else if (xSpeed < 5f) {
+		} else if (xSpeed < -5f) {
 			xSpeed = -5f;
 		}
 			
